@@ -334,6 +334,7 @@ export default function Dashboard() {
         <div className="tabs">
           <button className={`tab${activeTab==='productos'?' active':''}`} onClick={()=>setActiveTab('productos')}>Mis productos</button>
           <button className={`tab${activeTab==='analyses'?' active':''}`} onClick={()=>setActiveTab('analyses')}>Análisis guardados</button>
+          <button className={`tab${activeTab==='manual'?' active':''}`} onClick={()=>setActiveTab('manual')}>📖 Manual</button>
         </div>
 
         {/* PRODUCTOS */}
@@ -422,6 +423,78 @@ export default function Dashboard() {
               </div>
             )}
           </>
+        )}
+
+        {/* MANUAL TAB */}
+        {activeTab === 'manual' && (
+          <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
+
+            {/* RESUMEN DEL SISTEMA */}
+            <div style={{background:'#0D1219',border:'1px solid rgba(255,255,255,0.07)',padding:'20px 24px',borderLeft:'3px solid #00E5A0'}}>
+              <div style={{fontFamily:'JetBrains Mono',fontSize:'10px',letterSpacing:'0.15em',textTransform:'uppercase',color:'#5A7A8A',marginBottom:'12px'}}>ProductLab — Resumen del sistema</div>
+              <h3 style={{fontSize:'18px',fontWeight:'800',marginBottom:'8px',color:'#E8F0F8'}}>El sistema operativo de tu e-commerce</h3>
+              <p style={{fontSize:'13px',color:'#5A7A8A',lineHeight:'1.6',marginBottom:'16px'}}>ProductLab integra research con IA, análisis de costos, gestión operativa y publicación en marketplaces en un flujo de 4 pasos. Acceso por invitación, datos guardados en Supabase.</p>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'}}>
+                {[
+                  {n:'01',t:'Calendario',d:'20+ fechas 2026–2028 con timing de barco automático',c:'#FF9500'},
+                  {n:'02',t:'Research IA',d:'Productos por segmento y canal con links directos a proveedores',c:'#00E5A0'},
+                  {n:'03',t:'Decisión de compra',d:'Costo de aterrizaje completo: flete + aduana + fees',c:'#FFB800'},
+                  {n:'04',t:'Plan de acción',d:'Checklist + confirmar al Dashboard + publicar en MeLi',c:'#0066FF'},
+                ].map(s=>(
+                  <div key={s.n} style={{padding:'12px',border:`1px solid ${s.c}33`,background:`${s.c}08`}}>
+                    <div style={{fontFamily:'JetBrains Mono',fontSize:'10px',color:s.c,marginBottom:'4px'}}>PASO {s.n} — {s.t.toUpperCase()}</div>
+                    <div style={{fontSize:'12px',color:'#7A9BB5',lineHeight:'1.5'}}>{s.d}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* CAPÍTULOS */}
+            {[
+              { num:'01', title:'Génesis del E-Commerce', color:'#1E3A5F',
+                content:'El e-commerce es un negocio de sistemas, no de productos. Los tres modelos: Arbitraje (aprender), Marca Propia (escalar), Wholesale (volumen). Stack: Amazon + MeLi + Shopify + Alibaba + 1688 + ProductLab.' },
+              { num:'02', title:'Mentalidad Inquebrantable', color:'#1E3A5F',
+                content:'El primer producto va a fallar — es el costo de la educación. Los tres pilares: tolerancia al ciclo largo (6–18 meses), decisiones basadas en data, velocidad de ejecución sobre perfeccionismo.' },
+              { num:'03', title:'Marketplace o Tienda Propia', color:'#A85636',
+                content:'Secuencia correcta: 1) Validar en MeLi (local, rápido), 2) Escalar a Amazon (dólares, global), 3) Construir Shopify (marca propia, email list, LTV). Amazon da volumen. MeLi da validación. Shopify da margen.' },
+              { num:'04', title:'Búsqueda de Productos', color:'#B8924A',
+                content:'Tres segmentos: 🔥 Tendencia (ventana corta, upside alto), 📅 Estacional (timing predecible, planificar 60–90 días antes), 🔄 Cotidiano (base estable del negocio). Criterios: USD 20–80, <2kg, >300 unidades/mes, <200 reviews top 3.' },
+              { num:'05', title:'Búsqueda de Proveedores', color:'#00B386',
+                content:'Alibaba: inglés, Trade Assurance, precio exportación. 1688: chino, precio fábrica directo, requiere agente. Proceso: 10 candidatos → 5 contactados → 2–3 muestras → 1 proveedor. Pago: 30% adelanto, 70% contra BL.' },
+              { num:'06', title:'Armado de Ofertas', color:'#FF3B8B',
+                content:'Bundle: productos complementarios en un listing (menor competencia directa). Multipack: misma unidad en mayor cantidad (AOV más alto). Gift Set: packaging premium para fechas (precio 20–40% más alto). El bundle es la palanca más eficiente.' },
+              { num:'07', title:'SEO & Tráfico', color:'#FF9500',
+                content:'Listing: keyword principal al inicio del título, 5 bullets con beneficio > feature, 250 bytes de backend keywords, mín. 7 imágenes. PPC: automática (2 semanas) → manual exacta → competidores. ACoS objetivo < 30%. TikTok Ads mejora el ranking orgánico en Amazon.' },
+              { num:'08', title:'Sistemas de Escala y LLC', color:'#0A1628',
+                content:'Etapas: Validación (0–3m) → Optimización (3–6m) → Escala (6–12m, +USD 10K/mes) → Sistemización (12m+, SOPs, equipo, venta 3–5x EBITDA). LLC Wyoming: USD 102/año, Mercury Bank, EIN del IRS.' },
+              { num:'09', title:'ProductLab — Sistema Propio', color:'#00E5A0',
+                content:'4 pasos integrados: Calendario (fechas + timing barco) → Research IA (nichos + links directos) → Calculadora (costo aterrizaje = proveedor + flete + aduana + prep) → Plan de acción (checklist + publicar MeLi). Dashboard: ciclo de vida del producto, P&L real, tipo de cambio BNA.' },
+            ].map(cap => (
+              <div key={cap.num} style={{background:'#0D1219',border:'1px solid rgba(255,255,255,0.07)',overflow:'hidden'}}>
+                <div style={{display:'grid',gridTemplateColumns:'60px 1fr',background:'#080C10'}}>
+                  <div style={{background:cap.color,display:'flex',alignItems:'center',justifyContent:'center',padding:'14px',fontFamily:'JetBrains Mono',fontSize:'18px',fontWeight:'700',color:'#fff'}}>
+                    {cap.num}
+                  </div>
+                  <div style={{padding:'14px 18px'}}>
+                    <div style={{fontSize:'14px',fontWeight:'700',color:'#E8F0F8',marginBottom:'6px'}}>{cap.title}</div>
+                    <div style={{fontSize:'12px',color:'#5A7A8A',lineHeight:'1.6'}}>{cap.content}</div>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* DOWNLOAD LINK */}
+            <div style={{background:'#0D1219',border:'1px solid rgba(0,229,160,0.2)',padding:'16px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+              <div>
+                <div style={{fontSize:'13px',fontWeight:'700',marginBottom:'4px'}}>📄 Génesis del E-Commerce v2.0</div>
+                <div style={{fontFamily:'JetBrains Mono',fontSize:'11px',color:'#5A7A8A'}}>Documento completo · 9 capítulos · Word (.docx)</div>
+              </div>
+              <a href="https://github.com/darioter/productlab" target="_blank" style={{background:'#00E5A0',color:'#000',padding:'9px 18px',fontFamily:'JetBrains Mono',fontSize:'11px',fontWeight:'700',letterSpacing:'0.08em',textTransform:'uppercase',textDecoration:'none'}}>
+                Ver en GitHub →
+              </a>
+            </div>
+
+          </div>
         )}
       </div>
 
