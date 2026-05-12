@@ -942,19 +942,32 @@ function fmtDateFull(d) {
 
 function renderFechas(filter='all') {
   const grid = document.getElementById('fechasGrid');
-  const list = filter === 'all' ? FECHAS : FECHAS.filter(f => f.type === filter);
+  let list = filter === 'all' ? FECHAS : FECHAS.filter(f => f.type === filter);
+  // Ocultar fechas pasadas
+  list = list.filter(f => getDaysUntil(f.date) >= 0);
+  // Ordenar por fecha más próxima
+  list = list.sort((a,b) => getDaysUntil(a.date) - getDaysUntil(b.date));
+
+  if(list.length === 0) {
+    grid.innerHTML = '<div style="grid-column:1/-1;font-family:\'JetBrains Mono\',monospace;font-size:12px;color:var(--muted);padding:20px 0;text-align:center;letter-spacing:0.08em">No hay fechas próximas en esta categoría</div>';
+    return;
+  }
+
+  const typeLabels = {ecom:'E-COM',social:'SOCIAL',vacaciones:'VACAC.',prevac:'PRE-VAC'};
   grid.innerHTML = list.map(f => {
     const days = getDaysUntil(f.date);
-    const isPast = days < 0;
-    const cdClass = isPast ? 'past' : days <= 20 ? 'urgent' : days <= 50 ? 'warning' : 'ok';
-    const cdText = isPast ? 'Pasó' : days === 0 ? '¡HOY!' : `${days}d`;
-    const typeLabels = {ecom:'E-COM',social:'SOCIAL',vacaciones:'VACAC.',prevac:'PRE-VAC'};
+    const cdClass = days <= 20 ? 'urgent' : days <= 50 ? 'warning' : 'ok';
+    const cdText = days === 0 ? '¡HOY!' : `${days}d`;
+    const d = new Date(f.date+'T12:00:00');
+    // Fecha con día, mes abreviado y AÑO visible
+    const fechaLabel = d.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});
+    const año = d.getFullYear();
     return `<div class="fecha-card" data-fid="${f.id}" style="--fc:${f.color}" onclick="selectFecha('${f.id}')">
       <div class="fecha-emoji">${f.emoji}</div>
       <div class="fecha-name">${f.name}</div>
-      <div class="fecha-date">${fmtDateFull(new Date(f.date+'T12:00:00'))}</div>
-      <div class="fecha-type ${f.type}">${typeLabels[f.type]||f.type}</div>
-      <div class="fecha-countdown ${cdClass}">${isPast?'—':cdText+' restantes'}</div>
+      <div class="fecha-date">${fechaLabel}</div>
+      <div class="fecha-type ${f.type}">${typeLabels[f.type]||f.type} · ${año}</div>
+      <div class="fecha-countdown ${cdClass}">${cdText} restantes</div>
     </div>`;
   }).join('');
 }
