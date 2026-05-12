@@ -14,6 +14,274 @@ const ESTADOS = {
   vendido:    { label: 'Vendido',      color: '#96BF48', icon: '✅' },
 };
 
+// ═══════════════════════════════════════════
+// MANUAL BOOK COMPONENT
+// ═══════════════════════════════════════════
+const CAPITULOS = [
+  {
+    num:'00', emoji:'📖', title:'Génesis del E-Commerce', subtitle:'El mapa completo del sistema', color:'#00E5A0',
+    sections:[
+      { label:'¿Qué es realmente?', text:'El e-commerce no es "vender por internet". Es construir un sistema de flujo de valor donde el producto correcto llega a la persona correcta en el momento correcto, a través del canal correcto. La diferencia entre quien fracasa y quien escala no está en el producto — está en el sistema que construyeron alrededor de ese producto.' },
+      { label:'Los tres modelos', items:[
+        ['Arbitraje','Comprás un producto donde está barato y lo revendés donde está caro. Amazon → MeLi, Alibaba → Amazon, mayorista local → tienda online. Barrera de entrada baja, márgenes ajustados, ideal para aprender el sistema sin inventario de marca propia.'],
+        ['Marca Propia (Private Label)','Mandás fabricar un producto con tu marca, diseño y packaging. Mayor margen, mayor control, mayor inversión inicial. Es el modelo de largo plazo y el que genera activos vendibles.'],
+        ['Wholesale','Comprás en cantidad a un distribuidor autorizado y revendés en marketplaces. Volumen alto, márgenes predecibles, menos trabajo creativo.'],
+      ]},
+      { label:'El stack completo', items:[
+        ['Canales de venta','Amazon FBA (global, USD) · MercadoLibre (LATAM, ARS/USD) · Shopify (marca propia, DTC)'],
+        ['Sourcing','Alibaba.com (internacional, inglés) · 1688.com (fábrica directa, chino, más barato)'],
+        ['Sistema operativo','ProductLab — research IA + calculadora + dashboard + publicación'],
+        ['Pagos','Payoneer o Wise para cobrar en USD desde Argentina'],
+        ['Legal','LLC en Wyoming (EE.UU.) para operar en Amazon US con cuenta bancaria propia'],
+      ]},
+      { label:'La regla de oro', highlight:true, text:'El e-commerce es un negocio de sistemas, no de productos. El producto cambia. El sistema permanece. Construís el sistema una vez y lo aplicás a decenas de productos.' },
+    ]
+  },
+  {
+    num:'01', emoji:'🧠', title:'Mentalidad Inquebrantable', subtitle:'La ventaja invisible que separa a los que escalan', color:'#0066FF',
+    sections:[
+      { label:'El primer producto va a fallar', text:'No como posibilidad — como certeza estadística. Más del 70% de los primeros productos en Amazon no logran escalar. Esto no es fracaso — es el costo de la educación. La pregunta no es si va a pasar, sino cuánto te va a costar y qué vas a aprender. El error más caro es abandonar después del primero.' },
+      { label:'Los tres pilares', items:[
+        ['Tolerancia al ciclo largo','Un negocio de e-commerce desde cero hasta flujo de caja positivo sostenible tarda entre 6 y 18 meses. No es un ingreso rápido. Es un activo digital que construís con tiempo, capital y decisiones. Quien entra buscando resultados en 30 días siempre pierde.'],
+        ['Decisiones basadas en datos','El mayor riesgo del e-commerce es el "me parece". Me parece que este producto va a vender. Me parece que este precio es correcto. Cada decisión tiene que estar respaldada por data: BSR, volumen de búsqueda mensual, tendencia, competencia real, margen post-fees calculado con precisión.'],
+        ['Velocidad de ejecución','El listing imperfecto que está live hoy genera más data que el listing perfecto que seguís editando. Lanzar, medir, iterar. El mercado te enseña más en dos semanas de ventas reales que en dos meses de planificación.'],
+      ]},
+      { label:'La trampa del curso eterno', text:'El ciclo más común en e-commerce: curso → video → podcast → otro curso → planilla de análisis → otro video. Sin nunca ejecutar. El conocimiento sin acción no genera ingresos. Fijate una fecha de primer lanzamiento y respetala aunque no te sientas 100% listo. No vas a estarlo nunca.' },
+      { label:'Regla de capital', highlight:true, text:'Nunca inviertas en inventario dinero que no podés perder. El primer lote es una inversión en educación, no en ganancias. Si perderlo te genera una crisis financiera real, el monto es demasiado alto.' },
+    ]
+  },
+  {
+    num:'02', emoji:'🏪', title:'Marketplace o Tienda Propia', subtitle:'Cuándo usar cada canal y cómo combinarlos', color:'#A85636',
+    sections:[
+      { label:'La pregunta correcta', text:'No es "¿marketplace o tienda propia?". Es "¿cuál va primero?". Cada canal tiene ventajas que el otro no puede replicar. El negocio maduro usa los tres. La estrategia está en la secuencia de entrada.' },
+      { label:'Comparativa de canales', items:[
+        ['Amazon FBA','Tráfico millonario incluido. Fees 28–35%. Control de marca limitado (Amazon no te da los datos del cliente). Fulfillment delegado (FBA). Ideal para producto con demanda validada y margen > 40%.'],
+        ['MercadoLibre','Mercado hispanohablante dominante. Fees 13–18%. Envío Gratis mejora el ranking. Menos competencia que Amazon para productos de nicho. Cobro en ARS (convertible a USD vía Payoneer).'],
+        ['Shopify (DTC)','Margen más alto (fees 5–8%). Control total del cliente: email, retargeting, LTV. Requiere generar el tráfico vos (Meta Ads, TikTok Ads, SEO). Ideal para marca con identidad propia.'],
+      ]},
+      { label:'La secuencia ganadora', items:[
+        ['Paso 1 — Validar en MeLi','Menor fricción operativa. Mercado local. No necesitás LLC ni cuenta bancaria en el exterior. El feedback es rápido. Si vendés 20–30 unidades por mes, el producto está validado.'],
+        ['Paso 2 — Escalar a Amazon US','Con el producto validado, entrás al mercado más grande del mundo. Precio en USD. Volumen 10x. Requiere LLC + cuenta en Mercury/Wise + prep center en EE.UU.'],
+        ['Paso 3 — Construir Shopify','Con tracción en Amazon o MeLi, construís la marca propia. Capturás el email del cliente. Podés hacer retargeting. Subís el ticket con bundles y suscripciones.'],
+      ]},
+      { label:'La fórmula', highlight:true, text:'Amazon te da el volumen. MeLi te da la validación local y el cash flow en pesos. Shopify te da el margen y el cliente. Los tres juntos son el sistema completo.' },
+    ]
+  },
+  {
+    num:'03', emoji:'🔍', title:'Búsqueda de Productos', subtitle:'El corazón del negocio — con ProductLab', color:'#B8924A',
+    sections:[
+      { label:'Las tres segmentaciones', items:[
+        ['🔥 Tendencia','Producto que está explotando ahora mismo en redes sociales, búsquedas y ventas. Ventana de oportunidad de 3–6 meses. Entrás rápido o perdés la ola. Alto upside, mayor riesgo. Fuentes: TikTok Creative Center, Google Trends, Amazon Movers & Shakers.'],
+        ['📅 Estacional','Demanda con pico predecible según fecha (Navidad, Día de la Madre, Vuelta al Cole) o estación (verano, invierno). Planificás el stock con 60–90 días de anticipación por el envío marítimo. El timing lo es todo.'],
+        ['🔄 Cotidiano','Demanda constante los 365 días del año, sin estacionalidad marcada. Base predecible del negocio. Más competencia pero más estable. Ideal para construir reputación y reviews sólidos.'],
+      ]},
+      { label:'Criterios de validación', items:[
+        ['Precio','Entre USD 20 y USD 80. Debajo de $20 el margen post-fees no aguanta. Arriba de $80 el ticket frena la conversión impulsiva.'],
+        ['Peso y tamaño','Menos de 2 kg por unidad. Dimensiones compactas. Determina el costo de FBA (Fulfillment by Amazon) y el flete desde China.'],
+        ['Demanda','Mínimo 300 unidades/mes de demanda total en el nicho. Medido con Helium 10 o Jungle Scout.'],
+        ['Competencia','Los 3 primeros resultados con menos de 200 reviews. Si están todos por encima de 500, el nicho está muy consolidado.'],
+        ['Margen','Mínimo 40% de margen bruto después de: costo del producto + flete + aduana + fees del canal. El ProductLab lo calcula automáticamente.'],
+      ]},
+      { label:'El portfolio ideal', text:'No depender de un solo producto. El portfolio ganador combina los tres segmentos: un producto cotidiano como base de ingresos estables, uno estacional para capitalizar los picos con stock planificado, y uno de tendencia como apuesta de upside. Si falla la tendencia, el cotidiano sigue generando caja.' },
+      { label:'Clave del sistema', highlight:true, text:'ProductLab hace el research con IA: ingresás la categoría, el segmento y el mercado, y el sistema devuelve 3 productos rankeados con score de oportunidad, métricas de demanda, margen estimado, links directos a Alibaba/1688/MeLi/Amazon y cálculo de timing de barco si hay una fecha objetivo.' },
+    ]
+  },
+  {
+    num:'04', emoji:'🏭', title:'Búsqueda de Proveedores', subtitle:'Alibaba, 1688, negociación y calidad', color:'#00B386',
+    sections:[
+      { label:'Los dos canales de sourcing', items:[
+        ['Alibaba.com','Plataforma internacional en inglés. Trade Assurance protege el pago. Precio de exportación (20–40% más caro que fábrica directa). MOQ generalmente 100–500 unidades. Ideal para el primer proveedor.'],
+        ['1688.com','Mercado interno chino, en mandarín. Precio directo de fábrica — el más bajo posible. Requiere agente intermediario o hablar chino. MOQ desde 50 unidades en muchos casos. Para escalar con mayor margen.'],
+      ]},
+      { label:'Proceso de selección paso a paso', items:[
+        ['1 — Buscar','Mínimo 10 proveedores del producto en Alibaba. Filtrar por: Gold Supplier + Trade Assurance + mínimo 3 años activo + tasa de respuesta > 90%.'],
+        ['2 — Contactar','Enviar RFQ (Request for Quotation) a los 5 mejores. Pedir precio para 200/500/1.000 unidades, especificaciones, tiempo de producción y opciones de packaging.'],
+        ['3 — Muestras','Pedir muestra a los 2–3 finalistas. Costo típico: USD 30–80 con envío aéreo incluido. Evaluar: calidad real vs fotos, tiempo de respuesta, proactividad del proveedor.'],
+        ['4 — Negociar','Precio, MOQ, tiempo de producción, incoterm (FOB o EXW), condiciones de pago. Siempre negociar — el primer precio nunca es el mejor.'],
+        ['5 — Primer pedido','30% adelanto contra factura proforma. 70% contra copia del BL (Bill of Lading). Para pedidos grandes (>USD 3.000), contratar inspector en China (QIMA, SGS): USD 200–400.'],
+      ]},
+      { label:'Template de primer contacto', highlight:true, text:'Hello, I am looking for [producto]. Please send me: 1) Best price for 200/500/1,000 units, 2) Product specifications and materials, 3) Sample cost and shipping, 4) Production lead time, 5) Packaging options. I am building a long-term supply chain and looking for a reliable partner.' },
+    ]
+  },
+  {
+    num:'05', emoji:'📦', title:'Armado de Ofertas', subtitle:'Cómo diferenciarte y subir el ticket', color:'#FF3B8B',
+    sections:[
+      { label:'El producto es el mínimo viable', text:'Dos vendedores con el mismo producto compiten por precio — race to the bottom. Dos vendedores con ofertas distintas compiten por valor. La oferta es lo que hace tu listing único aunque el producto no lo sea.' },
+      { label:'Tipos de combinaciones', items:[
+        ['Bundle complementario','Agrupás productos que se usan juntos en un solo listing. Ejemplo: prensa smash burger + espátula + recetario digital. Amazon no puede hacer price-matching exacto sobre un bundle. Menor competencia directa, precio 40–80% más alto que cada producto por separado.'],
+        ['Multipack','El mismo producto en mayor cantidad (pack x3, x6, x12). AOV más alto, costo por unidad más bajo, mejor posición en búsquedas de volumen. Funciona especialmente bien en consumibles y accesorios.'],
+        ['Gift Set / Edición especial','Packaging premium orientado a regalo. Funciona para fechas clave: Navidad, Día de la Madre, Día del Padre. Permite subir el precio 20–40% sobre el producto estándar con el mismo costo de fabricación + packaging.'],
+        ['Kit de inicio (Starter Kit)','Bundle orientado a principiantes de una actividad. Captura búsquedas de alto intent: "cómo empezar con X". El comprador valora no tener que decidir qué más necesita.'],
+      ]},
+      { label:'Cálculo del margen del bundle', text:'La lógica del bundle: si el producto A solo da 45% de margen a $24.99, el bundle A+B a $34.99 puede dar 55% de margen porque el costo marginal de B es bajo y el precio de venta sube más que proporcional. El bundle sube el margen absoluto y el porcentual al mismo tiempo.' },
+      { label:'Palanca clave', highlight:true, text:'El bundle bien armado es la palanca más eficiente del catálogo. No requiere más inventario complejo — requiere creatividad en el packaging y en la propuesta de valor.' },
+    ]
+  },
+  {
+    num:'06', emoji:'📈', title:'SEO & Tráfico', subtitle:'Orgánico y pago — los dos motores', color:'#FF9500',
+    sections:[
+      { label:'El listing perfecto', items:[
+        ['Título','Keyword principal al inicio (los primeros 5 palabras son las más pesadas para el algoritmo). Característica clave + variante/tamaño. Máximo 200 caracteres. Sin símbolos raros, sin MAYÚSCULAS innecesarias.'],
+        ['Bullet points','5 bullets. Primera palabra de cada uno en MAYÚSCULA. Formato: BENEFICIO — explicación del feature. No al revés. Keyword secundaria integrada de forma natural en cada uno.'],
+        ['Backend keywords','Hasta 250 bytes (no 250 palabras). Sin repetir lo que ya está en el listing. Sin comas. Incluir: variantes de escritura, errores ortográficos comunes, sinónimos, términos en inglés si aplica.'],
+        ['Imágenes','Mínimo 7 imágenes. Principal: fondo blanco puro, producto ocupa 85% del frame. Resto: lifestyle (producto en uso), infografía con features, dimensiones reales, comparativa, packaging, bundle.'],
+      ]},
+      { label:'PPC en Amazon — estructura', items:[
+        ['Campaña automática (semanas 1–2)','Amazon decide dónde mostrar el anuncio. Recolecta data de search terms reales. Budget: USD 15–20/día. Dejar correr 2 semanas sin tocar.'],
+        ['Campaña manual exacta (semana 3+)','Con los search terms ganadores de la automática. Bidear más alto en las keywords que convierten. Negar las que tuvieron clicks pero cero ventas.'],
+        ['Campaña de competidores','Mostrar tu producto en los listings de los competidores principales. CTR más bajo, pero capturas demanda caliente.'],
+        ['Optimización semanal','Revisar cada lunes. ACoS objetivo < 30%. Subir bids en keywords que convierten bien. Negar términos irrelevantes o no rentables.'],
+      ]},
+      { label:'Tráfico externo', items:[
+        ['TikTok Ads','El canal más potente ahora mismo para tendencias. In-Feed video de producto en uso real (no producción). Costo por clic más bajo que Meta. El tráfico externo a Amazon mejora el ranking orgánico.'],
+        ['Meta Ads (Facebook/Instagram)','Mejor para retargeting y audiencias por interés. Creative ganadora: video testimonial o "before/after". Mandar tráfico a Shopify (no directo a Amazon) para capturar el email.'],
+        ['Influencers','Micro-influencers (10K–100K) mejor ROI que mega. Modelo: gifting + comisión 10–15% por venta. Para Amazon usar URL con código de descuento único para trackear conversiones.'],
+      ]},
+      { label:'El multiplicador', highlight:true, text:'El tráfico externo (TikTok, Meta, influencers) que mandás a Amazon mejora el BSR y el ranking orgánico, además de generar ventas directas. Es decir: el paid media te da ventas hoy Y mejora el orgánico para mañana. Es el mayor multiplicador del sistema.' },
+    ]
+  },
+  {
+    num:'07', emoji:'🚀', title:'Sistemas de Escala', subtitle:'Del primer producto al negocio estructurado y vendible', color:'#0A1628',
+    sections:[
+      { label:'Las cuatro etapas', items:[
+        ['Etapa 1 — Validación (0–3 meses)','Primer producto live. Foco total en encontrar product-market fit. Métricas clave: conversion rate, velocidad de ventas, primeras reviews. No escalar hasta que el producto demuestre tracción orgánica.'],
+        ['Etapa 2 — Optimización (3–6 meses)','Mejorar listing, PPC, packaging. Lanzar variantes o segundo producto del mismo nicho. Objetivo: ACoS < 30%, margen > 35%, al menos 20 reviews con 4.0+ promedio.'],
+        ['Etapa 3 — Escala (6–12 meses)','Añadir canales (MeLi si no lo hiciste, Shopify). Aumentar inventario. Primer VA (asistente virtual). Objetivo: USD 10K+ revenue/mes, flujo de caja positivo.'],
+        ['Etapa 4 — Sistemización (12+ meses)','SOPs documentados para cada proceso. Equipo. 5–10 productos activos. Explorar marca propia. Considerar venta del negocio a agregadores (3–5x EBITDA anual).'],
+      ]},
+      { label:'LLC en EE.UU. — Wyoming', items:[
+        ['Por qué Wyoming','Sin impuesto estatal a las ganancias. Costo anual mínimo (USD 102). Privacidad total del owner. Ideal para no residentes.'],
+        ['Proceso de formación','1) Registrar LLC con servicio como Northwest o Incfile (USD 100–200). 2) Obtener EIN del IRS (gratis, online, 2–3 semanas). 3) Abrir cuenta en Mercury Bank o Relay (acepta no residentes). 4) Vincular Payoneer/Wise.'],
+        ['Delaware vs Wyoming','Delaware: preferido por inversores y VCs. Más complejo y caro. Solo si buscás funding externo. Wyoming: perfecto para operación propia sin inversores.'],
+      ]},
+      { label:'Virtual Assistants (VAs)', text:'El primer hire recomendado es un VA de servicio al cliente en Amazon: respuesta a reviews, manejo de casos con Seller Support, monitoreo de listing hijacking. Costo: USD 5–10/hora desde Filipinas (Onlinejobs.ph) o LATAM.' },
+      { label:'El activo', highlight:true, text:'Un negocio de e-commerce bien sistemizado no depende de vos para funcionar. Eso lo hace vendible. En Amazon, negocios rentables se venden entre 3x y 5x el EBITDA anual a agregadores como Thrasio, Branded o Berlin Brands. El objetivo final no es solo vender productos — es construir algo que valga.' },
+    ]
+  },
+  {
+    num:'08', emoji:'⚙️', title:'ProductLab — El Sistema', subtitle:'Cómo usar el sistema operativo de tu negocio', color:'#00E5A0',
+    sections:[
+      { label:'El flujo de 4 pasos', items:[
+        ['Paso 1 — Calendario','Seleccionás la fecha para la que estás comprando: Navidad, Día de la Madre, Hot Sale, Black Friday, vacaciones, etc. El sistema calcula automáticamente si llegás en barco o solo en aéreo, y te muestra la fecha límite de orden al proveedor.'],
+        ['Paso 2 — Research','Elegís el segmento (Tendencia / Estacional / Cotidiano) y la categoría. La IA analiza y devuelve 3 productos con score de oportunidad, métricas de demanda, margen estimado por canal y links directos para buscar en Alibaba, 1688, Amazon y MeLi.'],
+        ['Paso 3 — Decisión de compra','Ingresás el costo del proveedor. El sistema calcula automáticamente el costo de aterrizaje completo: flete (barco o aéreo según la fecha), seguro, aduana con el arancel correcto por categoría, prep center y banco. Muestra si conviene comprar (✅), evaluar (⚠️) o no comprar (🛑).'],
+        ['Paso 4 — Plan de acción','Generás el checklist de lanzamiento personalizado por canal. Elegís en qué canal comprás (Alibaba/1688/Amazon/local) y en cuál vendés (MeLi/Amazon/Shopify). Un click → el producto aparece en el Dashboard con estado "Ordenado".'],
+      ]},
+      { label:'El Dashboard', items:[
+        ['Mis productos','Todos los productos comprados con su estado actual: Ordenado → Producción → En barco → Aduana → Live → Vendido. Podés cambiar el estado con un click. El P&L real se calcula automáticamente.'],
+        ['Publicar en MeLi','Desde el Dashboard, un producto Live se puede publicar directamente en MercadoLibre. El sistema busca la categoría, precalcula el precio en ARS con el tipo de cambio BNA real del día, y publica vía API.'],
+        ['Análisis guardados','Todos los research que guardaste desde el Scout quedan acá para referencia. Podés convertir un análisis en producto con un click.'],
+        ['Manual','Este libro digital que estás leyendo.'],
+      ]},
+      { label:'Tipo de cambio', text:'El sistema usa el tipo de cambio oficial BNA (Banco Nación Argentina) en tiempo real para convertir precios USD a ARS al momento de publicar en MeLi. Siempre podés ajustar el precio antes de confirmar la publicación.' },
+      { label:'Acceso', highlight:true, text:'ProductLab es una plataforma privada de acceso por invitación. Cada usuario ve solo sus propios datos. El administrador puede invitar nuevos usuarios desde el panel. La API key de IA y las credenciales de MeLi están seguras en el servidor — nunca expuestas en el código del cliente.' },
+    ]
+  },
+];
+
+function ManualBook() {
+  const [page, setPage] = React.useState(0);
+  const cap = CAPITULOS[page];
+  const total = CAPITULOS.length;
+
+  return (
+    <div style={{fontFamily:'Syne,sans-serif'}}>
+      {/* PROGRESS BAR */}
+      <div style={{display:'flex',gap:'4px',marginBottom:'16px'}}>
+        {CAPITULOS.map((c,i)=>(
+          <div key={i} onClick={()=>setPage(i)} style={{
+            flex:1, height:'3px', background: i===page ? c.color : i<page ? 'rgba(0,229,160,0.3)' : 'rgba(255,255,255,0.07)',
+            cursor:'pointer', transition:'background 0.2s'
+          }}/>
+        ))}
+      </div>
+
+      {/* BOOK PAGE */}
+      <div style={{background:'#0D1219',border:'1px solid rgba(255,255,255,0.07)',minHeight:'520px',position:'relative',overflow:'hidden'}}>
+        {/* Color accent top */}
+        <div style={{position:'absolute',top:0,left:0,right:0,height:'4px',background:`linear-gradient(90deg,${cap.color},transparent)`}}/>
+
+        {/* Header */}
+        <div style={{padding:'28px 32px 20px',borderBottom:'1px solid rgba(255,255,255,0.07)',display:'flex',alignItems:'center',gap:'16px'}}>
+          <div style={{fontSize:'32px',lineHeight:1}}>{cap.emoji}</div>
+          <div style={{flex:1}}>
+            <div style={{fontFamily:'JetBrains Mono',fontSize:'10px',letterSpacing:'0.15em',textTransform:'uppercase',color:cap.color,marginBottom:'4px'}}>
+              Capítulo {cap.num} · {page+1}/{total}
+            </div>
+            <div style={{fontSize:'20px',fontWeight:'800',color:'#E8F0F8',lineHeight:1.2}}>{cap.title}</div>
+            <div style={{fontSize:'13px',color:'#5A7A8A',marginTop:'4px'}}>{cap.subtitle}</div>
+          </div>
+        </div>
+
+        {/* Content */}
+        <div style={{padding:'24px 32px 80px',overflowY:'auto',maxHeight:'440px'}}>
+          {cap.sections.map((s,si)=>(
+            <div key={si} style={{marginBottom:'24px'}}>
+              <div style={{fontFamily:'JetBrains Mono',fontSize:'10px',letterSpacing:'0.15em',textTransform:'uppercase',color:cap.color,marginBottom:'10px',paddingBottom:'6px',borderBottom:`1px solid ${cap.color}22`}}>
+                {s.label}
+              </div>
+              {s.highlight ? (
+                <div style={{padding:'14px 16px',borderLeft:`3px solid ${cap.color}`,background:`${cap.color}10`,fontSize:'13px',color:'#E8F0F8',lineHeight:'1.7'}}>
+                  {s.text}
+                </div>
+              ) : s.text ? (
+                <div style={{fontSize:'13px',color:'#B0C4D8',lineHeight:'1.8'}}>{s.text}</div>
+              ) : s.items ? (
+                <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
+                  {s.items.map(([k,v],ii)=>(
+                    <div key={ii} style={{display:'grid',gridTemplateColumns:'180px 1fr',gap:'12px',alignItems:'start'}}>
+                      <div style={{fontFamily:'JetBrains Mono',fontSize:'11px',fontWeight:'600',color:'#E8F0F8',paddingTop:'1px'}}>{k}</div>
+                      <div style={{fontSize:'12px',color:'#8AAABB',lineHeight:'1.6'}}>{v}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+            </div>
+          ))}
+        </div>
+
+        {/* Navigation */}
+        <div style={{position:'absolute',bottom:0,left:0,right:0,padding:'14px 32px',borderTop:'1px solid rgba(255,255,255,0.07)',background:'#0D1219',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
+          <button onClick={()=>setPage(p=>Math.max(0,p-1))} disabled={page===0}
+            style={{fontFamily:'JetBrains Mono',fontSize:'11px',padding:'7px 16px',background:'none',border:'1px solid rgba(255,255,255,0.1)',color:page===0?'#2A3A4A':'#E8F0F8',cursor:page===0?'not-allowed':'pointer',letterSpacing:'0.06em',textTransform:'uppercase',transition:'all 0.15s'}}>
+            ← Anterior
+          </button>
+          <div style={{display:'flex',gap:'6px'}}>
+            {CAPITULOS.map((c,i)=>(
+              <div key={i} onClick={()=>setPage(i)} style={{
+                width: i===page?'20px':'6px', height:'6px', borderRadius:'3px',
+                background: i===page ? cap.color : 'rgba(255,255,255,0.15)',
+                cursor:'pointer', transition:'all 0.2s'
+              }}/>
+            ))}
+          </div>
+          <button onClick={()=>setPage(p=>Math.min(total-1,p+1))} disabled={page===total-1}
+            style={{fontFamily:'JetBrains Mono',fontSize:'11px',padding:'7px 16px',background:page===total-1?'none':cap.color,border:`1px solid ${page===total-1?'rgba(255,255,255,0.1)':cap.color}`,color:page===total-1?'#2A3A4A':'#000',cursor:page===total-1?'not-allowed':'pointer',letterSpacing:'0.06em',textTransform:'uppercase',fontWeight:'700',transition:'all 0.2s'}}>
+            Siguiente →
+          </button>
+        </div>
+      </div>
+
+      {/* CHAPTER INDEX */}
+      <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'6px',marginTop:'12px'}}>
+        {CAPITULOS.map((c,i)=>(
+          <div key={i} onClick={()=>setPage(i)} style={{
+            padding:'8px 12px',border:`1px solid ${i===page?c.color:'rgba(255,255,255,0.07)'}`,
+            background:i===page?`${c.color}10`:'none',cursor:'pointer',transition:'all 0.15s',
+            display:'flex',alignItems:'center',gap:'8px'
+          }}>
+            <span style={{fontSize:'14px'}}>{c.emoji}</span>
+            <div>
+              <div style={{fontFamily:'JetBrains Mono',fontSize:'9px',color:i===page?c.color:'#5A7A8A',letterSpacing:'0.08em',textTransform:'uppercase'}}>Cap {c.num}</div>
+              <div style={{fontSize:'11px',color:i===page?'#E8F0F8':'#7A9BB5',fontWeight:i===page?'700':'400',lineHeight:1.3}}>{c.title}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function Dashboard() {
   const router = useRouter();
   const [user, setUser] = useState(null);
@@ -426,76 +694,7 @@ export default function Dashboard() {
         )}
 
         {/* MANUAL TAB */}
-        {activeTab === 'manual' && (
-          <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
-
-            {/* RESUMEN DEL SISTEMA */}
-            <div style={{background:'#0D1219',border:'1px solid rgba(255,255,255,0.07)',padding:'20px 24px',borderLeft:'3px solid #00E5A0'}}>
-              <div style={{fontFamily:'JetBrains Mono',fontSize:'10px',letterSpacing:'0.15em',textTransform:'uppercase',color:'#5A7A8A',marginBottom:'12px'}}>ProductLab — Resumen del sistema</div>
-              <h3 style={{fontSize:'18px',fontWeight:'800',marginBottom:'8px',color:'#E8F0F8'}}>El sistema operativo de tu e-commerce</h3>
-              <p style={{fontSize:'13px',color:'#5A7A8A',lineHeight:'1.6',marginBottom:'16px'}}>ProductLab integra research con IA, análisis de costos, gestión operativa y publicación en marketplaces en un flujo de 4 pasos. Acceso por invitación, datos guardados en Supabase.</p>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'10px'}}>
-                {[
-                  {n:'01',t:'Calendario',d:'20+ fechas 2026–2028 con timing de barco automático',c:'#FF9500'},
-                  {n:'02',t:'Research IA',d:'Productos por segmento y canal con links directos a proveedores',c:'#00E5A0'},
-                  {n:'03',t:'Decisión de compra',d:'Costo de aterrizaje completo: flete + aduana + fees',c:'#FFB800'},
-                  {n:'04',t:'Plan de acción',d:'Checklist + confirmar al Dashboard + publicar en MeLi',c:'#0066FF'},
-                ].map(s=>(
-                  <div key={s.n} style={{padding:'12px',border:`1px solid ${s.c}33`,background:`${s.c}08`}}>
-                    <div style={{fontFamily:'JetBrains Mono',fontSize:'10px',color:s.c,marginBottom:'4px'}}>PASO {s.n} — {s.t.toUpperCase()}</div>
-                    <div style={{fontSize:'12px',color:'#7A9BB5',lineHeight:'1.5'}}>{s.d}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* CAPÍTULOS */}
-            {[
-              { num:'01', title:'Génesis del E-Commerce', color:'#1E3A5F',
-                content:'El e-commerce es un negocio de sistemas, no de productos. Los tres modelos: Arbitraje (aprender), Marca Propia (escalar), Wholesale (volumen). Stack: Amazon + MeLi + Shopify + Alibaba + 1688 + ProductLab.' },
-              { num:'02', title:'Mentalidad Inquebrantable', color:'#1E3A5F',
-                content:'El primer producto va a fallar — es el costo de la educación. Los tres pilares: tolerancia al ciclo largo (6–18 meses), decisiones basadas en data, velocidad de ejecución sobre perfeccionismo.' },
-              { num:'03', title:'Marketplace o Tienda Propia', color:'#A85636',
-                content:'Secuencia correcta: 1) Validar en MeLi (local, rápido), 2) Escalar a Amazon (dólares, global), 3) Construir Shopify (marca propia, email list, LTV). Amazon da volumen. MeLi da validación. Shopify da margen.' },
-              { num:'04', title:'Búsqueda de Productos', color:'#B8924A',
-                content:'Tres segmentos: 🔥 Tendencia (ventana corta, upside alto), 📅 Estacional (timing predecible, planificar 60–90 días antes), 🔄 Cotidiano (base estable del negocio). Criterios: USD 20–80, <2kg, >300 unidades/mes, <200 reviews top 3.' },
-              { num:'05', title:'Búsqueda de Proveedores', color:'#00B386',
-                content:'Alibaba: inglés, Trade Assurance, precio exportación. 1688: chino, precio fábrica directo, requiere agente. Proceso: 10 candidatos → 5 contactados → 2–3 muestras → 1 proveedor. Pago: 30% adelanto, 70% contra BL.' },
-              { num:'06', title:'Armado de Ofertas', color:'#FF3B8B',
-                content:'Bundle: productos complementarios en un listing (menor competencia directa). Multipack: misma unidad en mayor cantidad (AOV más alto). Gift Set: packaging premium para fechas (precio 20–40% más alto). El bundle es la palanca más eficiente.' },
-              { num:'07', title:'SEO & Tráfico', color:'#FF9500',
-                content:'Listing: keyword principal al inicio del título, 5 bullets con beneficio > feature, 250 bytes de backend keywords, mín. 7 imágenes. PPC: automática (2 semanas) → manual exacta → competidores. ACoS objetivo < 30%. TikTok Ads mejora el ranking orgánico en Amazon.' },
-              { num:'08', title:'Sistemas de Escala y LLC', color:'#0A1628',
-                content:'Etapas: Validación (0–3m) → Optimización (3–6m) → Escala (6–12m, +USD 10K/mes) → Sistemización (12m+, SOPs, equipo, venta 3–5x EBITDA). LLC Wyoming: USD 102/año, Mercury Bank, EIN del IRS.' },
-              { num:'09', title:'ProductLab — Sistema Propio', color:'#00E5A0',
-                content:'4 pasos integrados: Calendario (fechas + timing barco) → Research IA (nichos + links directos) → Calculadora (costo aterrizaje = proveedor + flete + aduana + prep) → Plan de acción (checklist + publicar MeLi). Dashboard: ciclo de vida del producto, P&L real, tipo de cambio BNA.' },
-            ].map(cap => (
-              <div key={cap.num} style={{background:'#0D1219',border:'1px solid rgba(255,255,255,0.07)',overflow:'hidden'}}>
-                <div style={{display:'grid',gridTemplateColumns:'60px 1fr',background:'#080C10'}}>
-                  <div style={{background:cap.color,display:'flex',alignItems:'center',justifyContent:'center',padding:'14px',fontFamily:'JetBrains Mono',fontSize:'18px',fontWeight:'700',color:'#fff'}}>
-                    {cap.num}
-                  </div>
-                  <div style={{padding:'14px 18px'}}>
-                    <div style={{fontSize:'14px',fontWeight:'700',color:'#E8F0F8',marginBottom:'6px'}}>{cap.title}</div>
-                    <div style={{fontSize:'12px',color:'#5A7A8A',lineHeight:'1.6'}}>{cap.content}</div>
-                  </div>
-                </div>
-              </div>
-            ))}
-
-            {/* DOWNLOAD LINK */}
-            <div style={{background:'#0D1219',border:'1px solid rgba(0,229,160,0.2)',padding:'16px 20px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-              <div>
-                <div style={{fontSize:'13px',fontWeight:'700',marginBottom:'4px'}}>📄 Génesis del E-Commerce v2.0</div>
-                <div style={{fontFamily:'JetBrains Mono',fontSize:'11px',color:'#5A7A8A'}}>Documento completo · 9 capítulos · Word (.docx)</div>
-              </div>
-              <a href="https://github.com/darioter/productlab" target="_blank" style={{background:'#00E5A0',color:'#000',padding:'9px 18px',fontFamily:'JetBrains Mono',fontSize:'11px',fontWeight:'700',letterSpacing:'0.08em',textTransform:'uppercase',textDecoration:'none'}}>
-                Ver en GitHub →
-              </a>
-            </div>
-
-          </div>
-        )}
+        {activeTab === 'manual' && <ManualBook />}
       </div>
 
       {/* MODAL NUEVO PRODUCTO */}
