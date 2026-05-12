@@ -1165,13 +1165,13 @@ No pongas rubros genéricos como "ropa" o "electrónica". Sé concreto: "Campera
       })
     });
     const data = await resp.json();
+    if(data.error) throw new Error(data.error.message);
     const raw = data.content.map(b => b.text||'').join('');
     const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
     const rubros = parsed.rubros || [];
 
     document.getElementById('nichoTitle').textContent = `${s.icon} ${s.label} — elegí un nicho`;
     document.getElementById('nichoBanner').style.borderLeftColor = s.color;
-
     document.getElementById('nichoChips').innerHTML = `
       <div style="display:flex;gap:6px;flex-wrap:wrap;width:100%;margin-bottom:10px">
         ${rubros.map(r =>
@@ -1179,12 +1179,15 @@ No pongas rubros genéricos como "ropa" o "electrónica". Sé concreto: "Campera
         ).join('')}
       </div>
       <button onclick="clearNichos()" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);background:none;border:1px solid var(--border);padding:4px 12px;cursor:pointer;letter-spacing:0.06em;text-transform:uppercase">← Volver a segmentos</button>`;
+    document.getElementById('nichoBanner').classList.add('visible');
 
   } catch(e) {
-    document.getElementById('nichoTitle').textContent = 'Error al generar sugerencias';
+    console.error('loadNichosSeg error:', e);
+    document.getElementById('nichoTitle').textContent = 'Error: ' + e.message;
     document.getElementById('nichoChips').innerHTML = `
-      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:10px">No se pudo conectar con la IA. Escribí directamente en el campo.</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);margin-bottom:10px">${e.message || 'No se pudo conectar con la IA.'} Escribí directamente en el campo.</div>
       <button onclick="clearNichos()" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);background:none;border:1px solid var(--border);padding:4px 12px;cursor:pointer">← Volver</button>`;
+    document.getElementById('nichoBanner').classList.add('visible');
   }
 }
 
