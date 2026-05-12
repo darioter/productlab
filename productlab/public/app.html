@@ -221,7 +221,36 @@ select option{background:var(--surface);}
 .btn-save-analysis{background:none;color:var(--accent2);border:1px solid rgba(0,102,255,0.35);padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
 .btn-save-analysis:hover{background:rgba(0,102,255,0.08);border-color:var(--accent2);}
 .btn-save-analysis.saved{color:var(--accent);border-color:rgba(0,229,160,0.35);cursor:default;}
-/* SEARCH LINKS */
+/* PERFIL DE RIESGO */
+.perfil-block{background:var(--surface);border:1px solid var(--border);padding:20px;margin-bottom:16px;position:relative;overflow:hidden;}
+.perfil-block::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--accent2),transparent);}
+.perfil-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+.perfil-card{padding:14px;border:2px solid var(--border);cursor:pointer;transition:all 0.18s;background:var(--bg);text-align:center;user-select:none;}
+.perfil-card:hover{border-color:rgba(255,255,255,0.15);}
+.perfil-card.active-conservador{border-color:#00E5A0;background:rgba(0,229,160,0.06);}
+.perfil-card.active-moderado{border-color:#FFB800;background:rgba(255,184,0,0.06);}
+.perfil-card.active-agresivo{border-color:#FF4757;background:rgba(255,71,87,0.06);}
+.perfil-emoji{font-size:22px;margin-bottom:6px;}
+.perfil-name{font-size:13px;font-weight:700;margin-bottom:3px;}
+.perfil-subdesc{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);line-height:1.4;}
+.perfil-detail{padding:12px 14px;border:1px solid var(--border);background:var(--bg);display:none;margin-bottom:14px;}
+.perfil-detail.visible{display:block;}
+.perfil-detail-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.perfil-stat{text-align:center;}
+.perfil-stat-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;}
+.perfil-stat-val{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;}
+.perfil-filters{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.perfil-filter-group{display:flex;flex-direction:column;gap:6px;}
+.perfil-filter-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+.perfil-filter-input{background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:13px;padding:9px 12px;outline:none;transition:border-color 0.2s;width:100%;}
+.perfil-filter-input:focus{border-color:rgba(0,229,160,0.4);}
+.perfil-filter-input::placeholder{color:var(--muted);}
+.perfil-locked{display:none;padding:10px 14px;background:rgba(255,71,87,0.05);border:1px solid rgba(255,71,87,0.2);font-family:'JetBrains Mono',monospace;font-size:11px;color:#FF4757;letter-spacing:0.06em;margin-bottom:14px;}
+.perfil-locked.visible{display:block;}
+.perfil-badge{display:inline-flex;align-items:center;gap:4px;font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 8px;border:1px solid;letter-spacing:0.08em;text-transform:uppercase;margin-left:8px;}
+.perfil-badge.ok{color:#00E5A0;border-color:rgba(0,229,160,0.3);}
+.perfil-badge.warn{color:#FFB800;border-color:rgba(255,184,0,0.3);}
+.perfil-badge.out{color:#FF4757;border-color:rgba(255,71,87,0.3);}
 .search-links{display:flex;gap:5px;flex-wrap:wrap;padding:0 20px 14px;}
 .search-link{font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border:1px solid var(--border);color:var(--muted);text-decoration:none;transition:all 0.15s;letter-spacing:0.06em;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px;}
 .search-link:hover{color:var(--text);border-color:rgba(255,255,255,0.15);}
@@ -510,6 +539,54 @@ select option{background:var(--surface);}
 <!-- ══ STEP 2: RESEARCH ══ -->
 <div class="panel" id="panel2">
   <div class="section-title">Paso 02 — Research de producto</div>
+
+  <!-- PERFIL DE RIESGO -->
+  <div class="perfil-block">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">¿Con qué perfil entrás hoy? <span style="color:#FF4757">*obligatorio</span></div>
+    <div class="perfil-cards">
+      <div class="perfil-card" id="pc-conservador" onclick="setPerfil('conservador')">
+        <div class="perfil-emoji">🟢</div>
+        <div class="perfil-name" style="color:#00E5A0">Conservador</div>
+        <div class="perfil-subdesc">Bajo riesgo · Margen ≥40%<br>Capital hasta USD 1.500</div>
+      </div>
+      <div class="perfil-card" id="pc-moderado" onclick="setPerfil('moderado')">
+        <div class="perfil-emoji">🟡</div>
+        <div class="perfil-name" style="color:#FFB800">Moderado</div>
+        <div class="perfil-subdesc">Riesgo balanceado · Margen ≥30%<br>Capital USD 1.500–3.000</div>
+      </div>
+      <div class="perfil-card" id="pc-agresivo" onclick="setPerfil('agresivo')">
+        <div class="perfil-emoji">🔴</div>
+        <div class="perfil-name" style="color:#FF4757">Agresivo</div>
+        <div class="perfil-subdesc">Alto riesgo · Margen ≥20%<br>Capital USD 3.000+</div>
+      </div>
+    </div>
+
+    <!-- Detalle del perfil seleccionado -->
+    <div class="perfil-detail" id="perfilDetail">
+      <div class="perfil-detail-grid" id="perfilStats"></div>
+    </div>
+
+    <!-- Filtros opcionales -->
+    <div class="perfil-filters">
+      <div class="perfil-filter-group">
+        <label class="perfil-filter-label">💰 Capital disponible (USD) <span style="color:var(--muted);font-size:9px">opcional</span></label>
+        <input class="perfil-filter-input" id="fCapital" type="number" placeholder="ej: 1500" step="100" oninput="capitalMax=parseFloat(this.value)||null">
+      </div>
+      <div class="perfil-filter-group">
+        <label class="perfil-filter-label">🏷️ Precio mín. de venta (USD) <span style="color:var(--muted);font-size:9px">opcional</span></label>
+        <input class="perfil-filter-input" id="fPrecioMin" type="number" placeholder="ej: 15" step="1" oninput="precioMin=parseFloat(this.value)||null">
+      </div>
+      <div class="perfil-filter-group">
+        <label class="perfil-filter-label">🏷️ Precio máx. de venta (USD) <span style="color:var(--muted);font-size:9px">opcional</span></label>
+        <input class="perfil-filter-input" id="fPrecioMax" type="number" placeholder="ej: 60" step="1" oninput="precioMax=parseFloat(this.value)||null">
+      </div>
+    </div>
+  </div>
+
+  <!-- LOCK si no eligió perfil -->
+  <div class="perfil-locked" id="perfilLocked">
+    ⚠ Elegí tu perfil de riesgo para continuar
+  </div>
 
   <!-- SEG TABS — compacto, solo indica el activo -->
   <div style="display:flex;gap:0;border:1px solid var(--border);background:var(--surface);overflow:hidden;margin-bottom:16px" id="segTabs">
@@ -821,6 +898,30 @@ select option{background:var(--surface);}
 let currentStep = 1;
 let activeFecha = null;
 let seg = 'tendencia', market = 'amazon', srcAli = false, srcS16 = false;
+let perfil = null; // 'conservador' | 'moderado' | 'agresivo'
+let capitalMax = null;
+let precioMin = null, precioMax = null;
+
+const PERFILES = {
+  conservador: {
+    label:'Conservador', emoji:'🟢', color:'#00E5A0',
+    segSugerido:'cotidiano', margenMin:40, compMax:'Baja',
+    capitalSugerido:'hasta USD 1.500', breakeven:60,
+    desc:'Productos estables, demanda constante, bajo riesgo. Ideal para arrancar con seguridad.'
+  },
+  moderado: {
+    label:'Moderado', emoji:'🟡', color:'#FFB800',
+    segSugerido:'estacional', margenMin:30, compMax:'Media',
+    capitalSugerido:'USD 1.500–3.000', breakeven:90,
+    desc:'Balance entre riesgo y retorno. Estacional o tendencias ya probadas.'
+  },
+  agresivo: {
+    label:'Agresivo', emoji:'🔴', color:'#FF4757',
+    segSugerido:'tendencia', margenMin:20, compMax:'Alta',
+    capitalSugerido:'USD 3.000+', breakeven:120,
+    desc:'Máximo upside, máximo riesgo. Tendencias virales, ventanas cortas, todo o nada.'
+  },
+};
 let selectedProduct = null;
 let calcData = {};
 
@@ -1228,7 +1329,37 @@ function goStep(n) {
 // ═══════════════════════════════════════════════
 // STEP 2: RESEARCH
 // ═══════════════════════════════════════════════
-function setSeg(s, fromTab=false) {
+function setPerfil(p) {
+  perfil = p;
+  const pr = PERFILES[p];
+
+  // Update cards
+  ['conservador','moderado','agresivo'].forEach(k => {
+    const card = document.getElementById('pc-'+k);
+    card.className = 'perfil-card' + (k===p ? ' active-'+k : '');
+  });
+
+  // Show detail
+  const detail = document.getElementById('perfilDetail');
+  detail.classList.add('visible');
+  detail.style.borderColor = pr.color;
+  document.getElementById('perfilStats').innerHTML = [
+    { label:'Segmento sugerido', val: pr.segSugerido.charAt(0).toUpperCase()+pr.segSugerido.slice(1), color: pr.color },
+    { label:'Margen mínimo', val: pr.margenMin+'%', color: pr.color },
+    { label:'Competencia máx.', val: pr.compMax, color: pr.color },
+    { label:'Break-even objetivo', val: pr.breakeven+'d', color: pr.color },
+  ].map(s=>`
+    <div class="perfil-stat">
+      <div class="perfil-stat-label">${s.label}</div>
+      <div class="perfil-stat-val" style="color:${s.color}">${s.val}</div>
+    </div>`).join('');
+
+  // Auto-set segment
+  setSeg(pr.segSugerido);
+
+  // Hide lock message
+  document.getElementById('perfilLocked').classList.remove('visible');
+}
   seg = s;
   const cols = {tendencia:'var(--tendencia)',estacional:'var(--estacional)',cotidiano:'var(--cotidiano)'};
   document.querySelectorAll('.seg-tab').forEach(c => {
@@ -1295,7 +1426,20 @@ function buildPrompt(category, seg, market, mktSub, withAli, withS16, fechaHint)
   else if(market==='meli') mktMetrics='"precio_venta_usd":"$XX","costo_estimado_usd":"$X–XX","margen_estimado":"XX%","demanda_mensual":"XXX unid/mes","competencia":"Baja|Media|Alta","shipping_libre_viable":true';
   else if(market==='shopify') mktMetrics='"precio_venta_usd":"$XX","costo_estimado_usd":"$X–XX","margen_estimado":"XX%","aov_estimado":"$XX","canal_adquisicion":"TikTok Ads|Meta","cac_estimado":"$X–XX","competencia":"Baja|Media|Alta"';
   else mktMetrics='"costo_estimado_usd":"$X–XX","amazon":{"precio":"$XX","margen":"XX%","demanda":"X.XXX/mes","competencia":"Media"},"meli":{"precio_usd":"$XX","margen":"XX%","demanda":"XXX/mes","competencia":"Baja"},"shopify":{"precio":"$XX","margen":"XX%","canal":"TikTok|Meta"}';
-  return `Experto en e-commerce 10 años. Analizá "${category}" para ${market==='multi'?'Amazon US + MeLi AR + Shopify':market+' '+mktSub}. Segmento: ${segDefs[seg]}. Devolvé SOLO JSON sin texto ni backticks:
+
+  // Perfil constraints
+  const pr = perfil ? PERFILES[perfil] : null;
+  const perfilStr = pr ? `
+PERFIL DEL INVERSOR: ${pr.label.toUpperCase()}
+- Margen neto mínimo requerido: ${pr.margenMin}%
+- Competencia máxima aceptable: ${pr.compMax}
+- Break-even objetivo: menos de ${pr.breakeven} días
+${capitalMax ? `- Capital disponible: USD ${capitalMax} (costo estimado × MOQ mínimo debe ser ≤ USD ${capitalMax})` : ''}
+${precioMin||precioMax ? `- Rango de precio de venta: ${precioMin?'USD '+precioMin:''} – ${precioMax?'USD '+precioMax:''}` : ''}
+Solo devolvé productos que cumplan estos criterios. Si un producto no cumple el margen mínimo, no lo incluyas.` : '';
+
+  return `Experto en e-commerce 10 años. Analizá "${category}" para ${market==='multi'?'Amazon US + MeLi AR + Shopify':market+' '+mktSub}. Segmento: ${segDefs[seg]}.${perfilStr}
+Devolvé SOLO JSON sin texto ni backticks:
 {"productos":[{"nombre":"Nombre MUY específico","nicho":"sub-nicho concreto","descripcion":"2 oraciones concretas de oportunidad","score_oportunidad":82,"segmento":"${seg}",${segExtra}${mktMetrics},"pros":["pro1","pro2","pro3"],"contras":["contra1","contra2"],"keywords_principales":["kw1","kw2","kw3","kw4","kw5"],"tags":["TAG1","TAG2"],"alerta":null,${aliBlock},${s16Block},
 "busquedas":{"alibaba_query":"exact search terms in English for Alibaba","s1688_query":"中文搜索词","amazon_buy_query":"search terms for Amazon arbitrage","amazon_sell_query":"search terms to sell on Amazon","meli_query":"términos de búsqueda en español para MeLi","google_shopping_query":"terms for Google Shopping"}}]}
 3 productos. Tags: TENDENCIA 2025-26, VIRAL TIKTOK, VENTANA CORTA, EVERGREEN, NICHO DEFENSIBLE, ALTO MARGEN, BAJA COMPETENCIA, ESCALABLE, MULTI-CANAL, GIFT-FRIENDLY, BAJO COSTO ENTRADA, SHOPIFY NATIVO, RIESGO MODERADO, SATURADO.`;
@@ -1304,6 +1448,14 @@ function buildPrompt(category, seg, market, mktSub, withAli, withS16, fechaHint)
 async function runResearch() {
   const category = document.getElementById('categoryInput').value.trim();
   if(!category) { document.getElementById('categoryInput').focus(); return; }
+
+  // Validar perfil obligatorio
+  if(!perfil) {
+    document.getElementById('perfilLocked').classList.add('visible');
+    document.getElementById('perfilLocked').scrollIntoView({behavior:'smooth',block:'nearest'});
+    return;
+  }
+
   const mktSub = market==='amazon'?document.getElementById('amazonMarket').value:market==='meli'?document.getElementById('meliMarket').value:'';
   const fechaHint = activeFecha ? FECHAS.find(f=>f.id===activeFecha)?.name : null;
   document.getElementById('searchBtn').disabled = true;
@@ -1374,6 +1526,18 @@ function renderResults(productos, category, mktSub) {
           ${insight}
           <div class="metrics-row">${metrics}</div>
           <div class="canal-badge ${canalRec}">${canalLabels[canalRec]}</div>
+          ${perfil ? (() => {
+            const pr = PERFILES[perfil];
+            const margenNum = parseFloat((p.margen_estimado||p.amazon?.margen||'0').replace('%',''));
+            const compOk = p.competencia !== 'Alta' || pr.compMax === 'Alta';
+            const margenOk = margenNum >= pr.margenMin;
+            const precioNum = parseFloat((p.precio_venta_usd||p.amazon?.precio||'0').replace('$',''));
+            const precioOk = (!precioMin||precioNum>=precioMin) && (!precioMax||precioNum<=precioMax);
+            const capitalOk = !capitalMax || (parseFloat((p.costo_estimado_usd||'0').split('–')[0].replace(/[^0-9.]/g,''))||0) * 100 <= capitalMax;
+            const ok = margenOk && compOk && precioOk && capitalOk;
+            const warn = !ok && (margenOk || compOk);
+            return `<span class="perfil-badge ${ok?'ok':warn?'warn':'out'}">${ok?'✓ '+pr.label:warn?'⚠ Revisar':'✗ Fuera de perfil'}</span>`;
+          })() : ''}
         </div>
         <div class="score-block">
           <div class="score-ring"><svg width="58" height="58" viewBox="0 0 64 64"><circle class="ring-bg" cx="32" cy="32" r="26"/><circle class="ring-fill" cx="32" cy="32" r="26" stroke="${color}" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/></svg><div class="score-number" style="color:${color}">${score}</div></div>
@@ -1977,8 +2141,14 @@ async function confirmAddToDashboard() {
 
 function restart() {
   selectedProduct=null; activeFecha=null; calcData={};
+  perfil=null; capitalMax=null; precioMin=null; precioMax=null;
   document.getElementById('categoryInput').value='';
   document.getElementById('resultsArea').innerHTML='<div class="empty-state"><div class="icon">◎</div><p>Ingresá una categoría para comenzar el research</p></div>';
+  ['conservador','moderado','agresivo'].forEach(k=>{
+    const c=document.getElementById('pc-'+k); if(c) c.className='perfil-card';
+  });
+  const d=document.getElementById('perfilDetail'); if(d) d.classList.remove('visible');
+  const l=document.getElementById('perfilLocked'); if(l) l.classList.remove('visible');
   closeSP();
   goStep(1);
 }
