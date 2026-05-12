@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FBA Scout — Sistema Completo</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#080C10; --surface:#0D1219; --surface2:#131B24; --border:rgba(255,255,255,0.07);
+  --accent:#00E5A0; --accent2:#0066FF; --amber:#FFB800; --red:#FF4757;
+  --meli:#FFE600; --alibaba:#FF6A00; --s1688:#E02020; --shopify:#96BF48;
+  --text:#E8F0F8; --muted:#5A7A8A;
+  --tendencia:#FF3B8B; --estacional:#FF9500; --cotidiano:#00E5A0;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'Syne',sans-serif;min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,160,0.018) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,160,0.018) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.container{max-width:1060px;margin:0 auto;padding:0 20px;position:relative;z-index:1;}
+
+/* HEADER */
+header{padding:22px 0 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:0;}
+.logo{font-size:13px;font-weight:700;letter-spacing:0.2em;text-transform:uppercase;color:var(--accent);font-family:'JetBrains Mono',monospace;}
+.logo span{color:var(--muted);}
+.badge{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;border:1px solid rgba(0,229,160,0.3);color:var(--accent);letter-spacing:0.12em;text-transform:uppercase;}
+.hdr-right{display:flex;gap:8px;align-items:center;}
+.pp{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;border:1px solid var(--border);color:var(--muted);text-transform:uppercase;}
+
+/* STEP NAV */
+.step-nav{display:flex;gap:0;margin:20px 0;border:1px solid var(--border);overflow:hidden;background:var(--surface);}
+.step-btn{flex:1;padding:14px 10px;background:none;border:none;border-right:1px solid var(--border);cursor:pointer;transition:all 0.2s;display:flex;flex-direction:column;align-items:center;gap:4px;position:relative;overflow:hidden;}
+.step-btn:last-child{border-right:none;}
+.step-btn::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--sc,var(--border));opacity:0;transition:opacity 0.2s;}
+.step-btn.active::before,.step-btn.done::before{opacity:1;}
+.step-btn.done::before{background:var(--accent);opacity:0.5;}
+.step-num{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;color:var(--muted);}
+.step-label{font-size:12px;font-weight:600;color:var(--muted);text-align:center;letter-spacing:0.02em;}
+.step-btn.active .step-num,.step-btn.active .step-label{color:var(--sc,var(--accent));}
+.step-btn.done .step-label{color:var(--accent);}
+.step-btn.done .step-num::before{content:'✓ ';}
+.step-icon{font-size:16px;}
+
+/* PANELS */
+.panel{display:none;}
+.panel.active{display:block;}
+
+/* ── STEP 1: CALENDAR ── */
+.cal-hero{text-align:center;padding:24px 0 20px;}
+.cal-hero h2{font-size:clamp(22px,3.5vw,36px);font-weight:800;line-height:1.1;margin-bottom:8px;}
+.cal-hero h2 em{font-style:normal;color:var(--accent);}
+.cal-hero p{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);}
+
+.cal-filter{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;}
+.cal-filter-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;}
+.cfilter{font-family:'JetBrains Mono',monospace;font-size:10px;padding:5px 12px;border:1px solid var(--border);color:var(--muted);background:none;cursor:pointer;transition:all 0.15s;text-transform:uppercase;letter-spacing:0.06em;}
+.cfilter.active{border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,0.05);}
+
+.fechas-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:20px;}
+.fecha-card{padding:14px;border:1px solid var(--border);background:var(--surface);cursor:pointer;transition:all 0.18s;position:relative;overflow:hidden;user-select:none;}
+.fecha-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--fc);opacity:0.5;transition:opacity 0.2s;}
+.fecha-card:hover::before,.fecha-card.active::before{opacity:1;}
+.fecha-card:hover,.fecha-card.active{border-color:var(--fc);}
+.fecha-card.active{background:color-mix(in srgb,var(--fc) 6%,var(--surface));}
+.fecha-emoji{font-size:20px;margin-bottom:6px;}
+.fecha-name{font-size:12px;font-weight:700;color:var(--text);margin-bottom:2px;line-height:1.3;}
+.fecha-date{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px;}
+.fecha-type{font-family:'JetBrains Mono',monospace;font-size:9px;padding:2px 6px;border:1px solid;text-transform:uppercase;letter-spacing:0.06em;display:inline-block;margin-bottom:6px;}
+.fecha-type.ecom{color:var(--accent2);border-color:rgba(0,102,255,0.3);}
+.fecha-type.social{color:var(--tendencia);border-color:rgba(255,59,139,0.3);}
+.fecha-type.vacaciones{color:var(--amber);border-color:rgba(255,184,0,0.3);}
+.fecha-type.prevac{color:var(--estacional);border-color:rgba(255,149,0,0.3);}
+.fecha-countdown{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;}
+.fecha-countdown.urgent{color:var(--red);}
+.fecha-countdown.warning{color:var(--amber);}
+.fecha-countdown.ok{color:var(--accent);}
+.fecha-countdown.past{color:var(--muted);opacity:0.5;}
+
+/* SHIPPING PANEL */
+.shipping-panel{display:none;background:var(--surface);border:1px solid var(--border);padding:20px;margin-bottom:20px;position:relative;overflow:hidden;}
+.shipping-panel.visible{display:block;}
+.shipping-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.shipping-panel.ok::before{background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.shipping-panel.warning::before{background:linear-gradient(90deg,transparent,var(--amber),transparent);}
+.shipping-panel.urgent::before{background:linear-gradient(90deg,transparent,var(--red),transparent);}
+.sp-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;gap:12px;}
+.sp-title{font-size:14px;font-weight:700;line-height:1.4;}
+.sp-title.ok{color:var(--accent);}
+.sp-title.warning{color:var(--amber);}
+.sp-title.urgent{color:var(--red);}
+.sp-close{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);cursor:pointer;padding:3px 10px;border:1px solid var(--border);white-space:nowrap;flex-shrink:0;}
+.sp-timeline{display:grid;grid-template-columns:repeat(5,1fr);gap:0;border:1px solid var(--border);overflow:hidden;margin-bottom:14px;}
+.sp-step{padding:12px 10px;border-right:1px solid var(--border);text-align:center;}
+.sp-step:last-child{border-right:none;}
+.sp-step-icon{font-size:18px;margin-bottom:4px;}
+.sp-step-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.sp-step-date{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;}
+.sp-step-date.past{color:var(--red);}
+.sp-step-date.tight{color:var(--amber);}
+.sp-step-date.good{color:var(--accent);}
+.sp-step-sub{font-size:10px;color:var(--muted);margin-top:2px;}
+.sp-note{font-size:12px;color:var(--muted);line-height:1.6;padding:10px 14px;border-left:3px solid;}
+.sp-note.ok{border-color:var(--accent);}
+.sp-note.warning{border-color:var(--amber);}
+.sp-note.urgent{border-color:var(--red);}
+.sp-cta{margin-top:14px;}
+.btn-cta{background:var(--accent);color:#000;border:none;padding:11px 24px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
+.btn-cta:hover{filter:brightness(1.1);transform:translateY(-1px);}
+.btn-outline{background:none;color:var(--accent);border:1px solid rgba(0,229,160,0.4);padding:11px 20px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;margin-left:10px;}
+.btn-outline:hover{border-color:var(--accent);background:rgba(0,229,160,0.05);}
+
+/* ── STEP 2: RESEARCH ── */
+.seg-selector{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:16px;}
+.seg-card{padding:14px;border:2px solid var(--border);cursor:pointer;transition:all 0.18s;background:var(--surface);position:relative;overflow:hidden;}
+.seg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--sc);opacity:0.3;transition:opacity 0.2s;}
+.seg-card.active::before{opacity:1;}
+.seg-card[data-seg="tendencia"]{--sc:var(--tendencia);}
+.seg-card[data-seg="estacional"]{--sc:var(--estacional);}
+.seg-card[data-seg="cotidiano"]{--sc:var(--cotidiano);}
+.seg-card.active{border-color:var(--sc);}
+.seg-icon{font-size:18px;margin-bottom:5px;}
+.seg-name{font-size:13px;font-weight:700;margin-bottom:2px;}
+.seg-card[data-seg="tendencia"] .seg-name{color:var(--tendencia);}
+.seg-card[data-seg="estacional"] .seg-name{color:var(--estacional);}
+.seg-card[data-seg="cotidiano"] .seg-name{color:var(--cotidiano);}
+.seg-desc{font-size:11px;color:var(--muted);line-height:1.4;}
+
+.search-panel{background:var(--surface);border:1px solid var(--border);padding:20px;margin-bottom:20px;position:relative;overflow:hidden;}
+.search-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--pc,var(--accent)),transparent);}
+.market-tabs{display:flex;margin-bottom:14px;border:1px solid var(--border);overflow:hidden;}
+.market-tab{flex:1;padding:9px 6px;background:none;border:none;color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;border-right:1px solid var(--border);}
+.market-tab:last-child{border-right:none;}
+.market-tab.active.t-amz{color:var(--accent);background:rgba(0,229,160,0.06);}
+.market-tab.active.t-meli{color:var(--meli);background:rgba(255,230,0,0.06);}
+.market-tab.active.t-shp{color:var(--shopify);background:rgba(150,191,72,0.06);}
+.market-tab.active.t-multi{color:var(--accent2);background:rgba(0,102,255,0.06);}
+.search-row{display:flex;gap:10px;margin-bottom:14px;}
+.input-group{flex:1;}
+.input-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:7px;}
+input[type="text"],input[type="number"],select{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:14px;padding:11px 14px;outline:none;transition:border-color 0.2s;appearance:none;}
+input[type="text"]:focus,input[type="number"]:focus,select:focus{border-color:rgba(0,229,160,0.4);}
+input::placeholder{color:var(--muted);}
+select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A7A8A' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:30px;}
+select option{background:var(--surface);}
+.btn-primary{background:var(--accent);color:#000;border:none;padding:11px 24px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;white-space:nowrap;align-self:flex-end;}
+.btn-primary:hover{filter:brightness(1.12);transform:translateY(-1px);}
+.btn-primary:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.sourcing-row{display:flex;gap:18px;padding-top:12px;border-top:1px solid var(--border);flex-wrap:wrap;}
+.src-toggle{display:flex;align-items:center;gap:7px;cursor:pointer;}
+.tsw{width:32px;height:18px;border-radius:9px;position:relative;transition:background 0.2s;border:1px solid var(--border);flex-shrink:0;background:var(--surface2);}
+.tsw::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;background:var(--muted);border-radius:50%;transition:all 0.2s;}
+.tsw.on-ali{background:rgba(255,106,0,0.2);border-color:rgba(255,106,0,0.4);}
+.tsw.on-ali::after{left:16px;background:var(--alibaba);}
+.tsw.on-s16{background:rgba(224,32,32,0.2);border-color:rgba(224,32,32,0.4);}
+.tsw.on-s16::after{left:16px;background:var(--s1688);}
+.src-label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;}
+.src-label.ali{color:var(--alibaba);}
+.src-label.s16{color:var(--s1688);}
+
+/* LOADING */
+.loading{display:none;padding:50px 0;text-align:center;}
+.loading.active{display:block;}
+.loader{width:36px;height:36px;border:2px solid var(--border);border-top-color:var(--accent);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.loading p{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted);letter-spacing:0.08em;}
+.loading-steps{margin-top:12px;display:flex;flex-direction:column;gap:5px;align-items:center;}
+.loading-step{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);opacity:0;transition:opacity 0.3s;}
+.loading-step.visible{opacity:1;color:var(--accent);}
+.loading-step.done{opacity:0.35;}
+
+/* PRODUCT CARDS */
+.results-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.results-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+.results-title span{color:var(--accent);}
+.products-grid{display:flex;flex-direction:column;gap:10px;margin-bottom:24px;}
+.product-card{background:var(--surface);border:1px solid var(--border);opacity:0;transform:translateY(10px);animation:fadeUp 0.35s forwards;overflow:hidden;transition:border-color 0.2s;}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0);}}
+.product-card:hover{border-color:rgba(255,255,255,0.1);}
+.card-seg-bar{height:3px;}
+.card-seg-bar.tendencia{background:linear-gradient(90deg,var(--tendencia),transparent);}
+.card-seg-bar.estacional{background:linear-gradient(90deg,var(--estacional),transparent);}
+.card-seg-bar.cotidiano{background:linear-gradient(90deg,var(--cotidiano),transparent);}
+.card-top{padding:16px 20px;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:start;}
+.product-niche{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--accent2);letter-spacing:0.1em;text-transform:uppercase;margin-bottom:4px;}
+.product-name{font-size:15px;font-weight:700;margin-bottom:6px;line-height:1.3;}
+.product-desc{font-size:12px;color:var(--muted);line-height:1.55;margin-bottom:12px;}
+.metrics-row{display:flex;gap:14px;flex-wrap:wrap;}
+.metric{display:flex;flex-direction:column;gap:2px;}
+.metric-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+.metric-value{font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:500;}
+.green{color:var(--accent);} .amber-c{color:var(--amber);} .red-c{color:var(--red);}
+.meli-c{color:var(--meli);} .shp-c{color:var(--shopify);}
+.score-block{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:62px;}
+.score-ring{position:relative;width:58px;height:58px;}
+.score-ring svg{transform:rotate(-90deg);}
+.ring-bg{fill:none;stroke:rgba(255,255,255,0.06);stroke-width:4;}
+.ring-fill{fill:none;stroke-width:4;stroke-linecap:round;}
+.score-number{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:500;}
+.score-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);}
+
+/* CANAL BADGE on card */
+.canal-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border:1px solid;font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase;margin-top:8px;}
+.canal-badge.amazon{color:var(--accent);border-color:rgba(0,229,160,0.3);background:rgba(0,229,160,0.05);}
+.canal-badge.meli{color:var(--meli);border-color:rgba(255,230,0,0.3);background:rgba(255,230,0,0.05);}
+.canal-badge.shopify{color:var(--shopify);border-color:rgba(150,191,72,0.3);background:rgba(150,191,72,0.05);}
+.canal-badge.multi{color:var(--accent2);border-color:rgba(0,102,255,0.3);background:rgba(0,102,255,0.05);}
+
+.tags-row{display:flex;gap:5px;flex-wrap:wrap;padding:0 20px 12px;}
+.tag{font-family:'JetBrains Mono',monospace;font-size:9px;padding:3px 8px;letter-spacing:0.07em;text-transform:uppercase;}
+.tag.tend-tag{background:rgba(255,59,139,0.08);color:var(--tendencia);border:1px solid rgba(255,59,139,0.25);}
+.tag.seas-tag{background:rgba(255,149,0,0.08);color:var(--estacional);border:1px solid rgba(255,149,0,0.25);}
+.tag.cot-tag{background:rgba(0,229,160,0.08);color:var(--cotidiano);border:1px solid rgba(0,229,160,0.25);}
+.tag.info{background:rgba(0,102,255,0.08);color:var(--accent2);border:1px solid rgba(0,102,255,0.2);}
+.tag.warning{background:rgba(255,184,0,0.08);color:var(--amber);border:1px solid rgba(255,184,0,0.2);}
+.tag.danger{background:rgba(255,71,87,0.08);color:var(--red);border:1px solid rgba(255,71,87,0.2);}
+
+.card-actions{padding:0 20px 14px;display:flex;gap:8px;}
+.btn-select{background:var(--accent);color:#000;border:none;padding:8px 18px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.2s;}
+.btn-select:hover{filter:brightness(1.1);}
+.btn-detail{background:none;color:var(--muted);border:1px solid var(--border);padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
+.btn-detail:hover{border-color:rgba(255,255,255,0.15);color:var(--text);}
+.card-expand{display:none;border-top:1px solid var(--border);padding:16px 20px;background:var(--bg);}
+.card-expand.open{display:block;}
+.expand-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.expand-section h4{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.expand-section ul{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.expand-section ul li{font-size:12px;color:var(--text);line-height:1.5;padding-left:14px;position:relative;}
+.expand-section ul li::before{content:'→';position:absolute;left:0;color:var(--accent);font-size:10px;}
+.keyword-list{display:flex;flex-wrap:wrap;gap:5px;}
+.keyword{font-family:'JetBrains Mono',monospace;font-size:10px;padding:3px 8px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);}
+.sourcing-grid{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sourcing-block{border:1px solid;padding:12px;}
+.sourcing-block.alibaba{border-color:rgba(255,106,0,0.25);background:rgba(255,106,0,0.03);}
+.sourcing-block.s1688{border-color:rgba(224,32,32,0.25);background:rgba(224,32,32,0.03);}
+.sourcing-block h4{margin-bottom:8px!important;}
+.sourcing-block.alibaba h4{color:var(--alibaba)!important;}
+.sourcing-block.s1688 h4{color:var(--s1688)!important;}
+.supplier-item{padding:7px 9px;background:var(--surface);border:1px solid var(--border);margin-bottom:6px;}
+.supplier-name{font-size:12px;font-weight:600;margin-bottom:2px;}
+.supplier-meta{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;}
+.supplier-price{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;margin-top:4px;}
+.supplier-price.ali{color:var(--alibaba);}
+.supplier-price.s16{color:var(--s1688);}
+
+/* ── STEP 3: CALCULADORA ── */
+.calc-header{margin-bottom:20px;}
+.calc-header h2{font-size:22px;font-weight:800;margin-bottom:6px;}
+.calc-header p{font-size:13px;color:var(--muted);}
+.calc-product-banner{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--accent);padding:14px 18px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.cpb-name{font-size:14px;font-weight:700;}
+.cpb-meta{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);}
+.cpb-change{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);cursor:pointer;padding:4px 10px;border:1px solid var(--border);}
+.cpb-change:hover{border-color:rgba(255,255,255,0.15);color:var(--text);}
+.calc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+.calc-section{background:var(--surface);border:1px solid var(--border);padding:18px;}
+.calc-section h3{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.calc-field{margin-bottom:12px;}
+.calc-field label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:6px;}
+.calc-field input{width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:14px;padding:10px 14px;outline:none;transition:border-color 0.2s;}
+.calc-field input:focus{border-color:rgba(0,229,160,0.4);}
+.calc-field-note{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:4px;}
+.calc-results{background:var(--surface);border:1px solid var(--border);padding:18px;margin-bottom:16px;}
+.calc-results h3{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.calc-result-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px;}
+.calc-metric{text-align:center;padding:14px 10px;border:1px solid var(--border);}
+.calc-metric-label{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.calc-metric-value{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:500;}
+.calc-metric-sub{font-size:11px;color:var(--muted);margin-top:3px;}
+.calc-metric.highlight{border-color:rgba(0,229,160,0.3);background:rgba(0,229,160,0.04);}
+.calc-metric.highlight .calc-metric-value{color:var(--accent);}
+.calc-metric.warn{border-color:rgba(255,184,0,0.3);background:rgba(255,184,0,0.04);}
+.calc-metric.warn .calc-metric-value{color:var(--amber);}
+.calc-metric.danger{border-color:rgba(255,71,87,0.3);background:rgba(255,71,87,0.04);}
+.calc-metric.danger .calc-metric-value{color:var(--red);}
+
+/* CANAL RECOMMENDATION */
+.canal-rec{border:1px solid var(--border);overflow:hidden;margin-bottom:16px;}
+.canal-rec-header{padding:12px 16px;background:var(--surface2);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.canal-rec-title{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);}
+.canal-rec-winner{font-size:13px;font-weight:700;}
+.canal-rec-winner.amazon{color:var(--accent);}
+.canal-rec-winner.meli{color:var(--meli);}
+.canal-rec-winner.shopify{color:var(--shopify);}
+.canal-rec-winner.multi{color:var(--accent2);}
+.canal-rows{display:grid;grid-template-columns:1fr 1fr 1fr;}
+.canal-row{padding:14px 16px;border-right:1px solid var(--border);position:relative;}
+.canal-row:last-child{border-right:none;}
+.canal-row.winner{background:rgba(0,229,160,0.03);}
+.canal-row.winner::before{content:'★ RECOMENDADO';position:absolute;top:8px;right:8px;font-family:'JetBrains Mono',monospace;font-size:8px;letter-spacing:0.08em;color:var(--accent);border:1px solid rgba(0,229,160,0.3);padding:2px 6px;}
+.canal-row-name{font-size:12px;font-weight:700;margin-bottom:8px;}
+.canal-row-name.amazon{color:var(--accent);}
+.canal-row-name.meli{color:var(--meli);}
+.canal-row-name.shopify{color:var(--shopify);}
+.canal-row-metric{display:flex;justify-content:space-between;margin-bottom:5px;}
+.canal-row-label{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);}
+.canal-row-val{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;}
+.canal-row-reason{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5;padding-top:8px;border-top:1px solid var(--border);}
+
+.verdict-bar{padding:14px 16px;border:1px solid;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;}
+.verdict-bar.go{border-color:rgba(0,229,160,0.3);background:rgba(0,229,160,0.05);}
+.verdict-bar.caution{border-color:rgba(255,184,0,0.3);background:rgba(255,184,0,0.05);}
+.verdict-bar.stop{border-color:rgba(255,71,87,0.3);background:rgba(255,71,87,0.05);}
+.verdict-text{font-size:13px;font-weight:700;}
+.verdict-text.go{color:var(--accent);}
+.verdict-text.caution{color:var(--amber);}
+.verdict-text.stop{color:var(--red);}
+.verdict-sub{font-size:12px;color:var(--muted);margin-top:2px;}
+
+/* ── STEP 4: ACTION PLAN ── */
+.action-header{margin-bottom:20px;}
+.action-header h2{font-size:22px;font-weight:800;margin-bottom:6px;}
+.action-header p{font-size:13px;color:var(--muted);}
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.action-block{background:var(--surface);border:1px solid var(--border);padding:18px;}
+.action-block h3{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);}
+.action-block h3.amazon{color:var(--accent);}
+.action-block h3.meli{color:var(--meli);}
+.action-block h3.shopify{color:var(--shopify);}
+.action-block h3.sourcing{color:var(--alibaba);}
+.action-block h3.timing{color:var(--estacional);}
+.action-block h3.ppc{color:var(--accent2);}
+.checklist{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.checklist li{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--text);line-height:1.5;}
+.check-box{width:16px;height:16px;border:1px solid var(--border);flex-shrink:0;margin-top:1px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;font-size:10px;}
+.check-box:hover{border-color:var(--accent);}
+.check-box.checked{background:var(--accent);border-color:var(--accent);color:#000;}
+.checklist li.done-item .check-box{background:var(--accent);border-color:var(--accent);color:#000;}
+.checklist li.done-item span{text-decoration:line-through;color:var(--muted);}
+.action-full{grid-column:1/-1;}
+.timeline-steps{display:flex;gap:0;border:1px solid var(--border);overflow:hidden;}
+.tl-step{flex:1;padding:14px 12px;border-right:1px solid var(--border);position:relative;}
+.tl-step:last-child{border-right:none;}
+.tl-step-week{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.tl-step-title{font-size:12px;font-weight:700;color:var(--text);margin-bottom:6px;}
+.tl-step-items{font-size:11px;color:var(--muted);line-height:1.6;}
+.tl-step-bar{position:absolute;bottom:0;left:0;right:0;height:3px;background:var(--tc,var(--border));}
+
+.export-bar{display:flex;gap:10px;padding:16px 0;border-top:1px solid var(--border);}
+.btn-export{background:none;color:var(--muted);border:1px solid var(--border);padding:10px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
+.btn-export:hover{border-color:var(--accent);color:var(--accent);}
+.btn-restart{background:none;color:var(--muted);border:1px solid var(--border);padding:10px 18px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;margin-left:auto;transition:all 0.15s;}
+.btn-restart:hover{border-color:var(--red);color:var(--red);}
+
+/* EMPTY & ERROR */
+.empty-state{padding:50px 0;text-align:center;color:var(--muted);}
+.empty-state .icon{font-size:26px;margin-bottom:10px;opacity:0.3;}
+.empty-state p{font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.08em;}
+.error-state{display:none;padding:12px 16px;background:rgba(255,71,87,0.05);border:1px solid rgba(255,71,87,0.2);margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--red);}
+.error-state.visible{display:block;}
+.section-title{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+
+/* NICHO CHIPS */
+.nicho-banner{display:none;background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--estacional);padding:14px 16px;margin-bottom:14px;}
+.nicho-banner.visible{display:block;}
+.nicho-banner-header{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.nicho-banner-icon{font-size:18px;}
+.nicho-banner-title{font-size:13px;font-weight:700;}
+.nicho-banner-sub{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-left:auto;letter-spacing:0.08em;text-transform:uppercase;}
+.nicho-chips{display:flex;gap:7px;flex-wrap:wrap;}
+.nicho-chip{font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 14px;border:1px solid var(--border);color:var(--muted);background:none;cursor:pointer;transition:all 0.15s;letter-spacing:0.06em;text-transform:uppercase;user-select:none;}
+.nicho-chip:hover{border-color:var(--estacional);color:var(--estacional);background:rgba(255,149,0,0.05);}
+.nicho-chip.selected{border-color:var(--estacional);color:var(--estacional);background:rgba(255,149,0,0.08);}
+.nicho-chip.tendencia-chip:hover,.nicho-chip.tendencia-chip.selected{border-color:var(--tendencia);color:var(--tendencia);background:rgba(255,59,139,0.08);}
+.nicho-chip.ecom-chip:hover,.nicho-chip.ecom-chip.selected{border-color:var(--accent);color:var(--accent);background:rgba(0,229,160,0.08);}
+
+@media(max-width:680px){
+  .step-label{font-size:10px;}
+  .seg-selector,.calc-grid,.action-grid,.canal-rows,.expand-grid,.sourcing-grid{grid-template-columns:1fr;}
+  .search-row{flex-direction:column;}
+  .market-tabs{flex-wrap:wrap;}
+  .market-tab{min-width:45%;}
+  .sp-timeline{grid-template-columns:1fr 1fr;}
+  .calc-result-grid{grid-template-columns:1fr 1fr;}
+  .timeline-steps{flex-direction:column;}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+<header>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="logo">FBA<span>scout</span></div>
+    <div class="badge">v5.0 · Sistema completo</div>
+  </div>
+  <div class="hdr-right">
+    <div class="pp" style="color:var(--accent);border-color:rgba(0,229,160,0.25)">Amazon</div>
+    <div class="pp" style="color:var(--meli);border-color:rgba(255,230,0,0.25)">MeLi</div>
+    <div class="pp" style="color:var(--shopify);border-color:rgba(150,191,72,0.25)">Shopify</div>
+    <div class="pp" style="color:var(--alibaba);border-color:rgba(255,106,0,0.25)">Alibaba</div>
+    <div class="pp" style="color:var(--s1688);border-color:rgba(224,32,32,0.25)">1688</div>
+  </div>
+</header>
+
+<!-- STEP NAV -->
+<div class="step-nav">
+  <button class="step-btn active" id="sBtn1" style="--sc:var(--estacional)" onclick="goStep(1)">
+    <div class="step-icon">📅</div>
+    <div class="step-num">PASO 01</div>
+    <div class="step-label">Calendario</div>
+  </button>
+  <button class="step-btn" id="sBtn2" style="--sc:var(--accent)" onclick="goStep(2)">
+    <div class="step-icon">🔍</div>
+    <div class="step-num">PASO 02</div>
+    <div class="step-label">Research</div>
+  </button>
+  <button class="step-btn" id="sBtn3" style="--sc:var(--amber)" onclick="goStep(3)">
+    <div class="step-icon">💰</div>
+    <div class="step-num">PASO 03</div>
+    <div class="step-label">Decisión de compra</div>
+  </button>
+  <button class="step-btn" id="sBtn4" style="--sc:var(--accent2)" onclick="goStep(4)">
+    <div class="step-icon">🚀</div>
+    <div class="step-num">PASO 04</div>
+    <div class="step-label">Plan de acción</div>
+  </button>
+</div>
+
+<!-- ══ STEP 1: CALENDARIO ══ -->
+<div class="panel active" id="panel1">
+  <div class="cal-hero">
+    <h2>¿Para qué <em>fecha</em> estás comprando?</h2>
+    <p>// Seleccioná la oportunidad → el sistema calcula el timing de compra automáticamente</p>
+  </div>
+  <div class="cal-filter">
+    <span class="cal-filter-label">Filtrar:</span>
+    <button class="cfilter active" data-type="all" onclick="filterFechas('all')">Todas</button>
+    <button class="cfilter" data-type="ecom" onclick="filterFechas('ecom')">E-Commerce</button>
+    <button class="cfilter" data-type="social" onclick="filterFechas('social')">Fechas sociales</button>
+    <button class="cfilter" data-type="vacaciones" onclick="filterFechas('vacaciones')">Vacaciones</button>
+    <button class="cfilter" data-type="prevac" onclick="filterFechas('prevac')">Prevacaciones</button>
+  </div>
+  <div class="fechas-grid" id="fechasGrid"></div>
+  <div class="shipping-panel" id="shippingPanel">
+    <div class="sp-header">
+      <div>
+        <div class="sp-title" id="spTitle"></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px" id="spSubtitle"></div>
+      </div>
+      <div class="sp-close" onclick="closeSP()">✕ cerrar</div>
+    </div>
+    <div class="sp-timeline" id="spTimeline"></div>
+    <div class="sp-note" id="spNote"></div>
+    <div class="sp-cta">
+      <button class="btn-cta" onclick="goStep(2)">Buscar producto para esta fecha →</button>
+      <button class="btn-outline" onclick="goStep(2)">Explorar sin fecha</button>
+    </div>
+  </div>
+  <div style="text-align:center;padding:20px 0;">
+    <button class="btn-outline" onclick="goStep(2)">Continuar sin fecha específica →</button>
+  </div>
+</div>
+
+<!-- ══ STEP 2: RESEARCH ══ -->
+<div class="panel" id="panel2">
+  <div class="section-title">Paso 02 — Research de producto</div>
+
+  <!-- NICHO BANNER (precargado desde fecha) -->
+  <div class="nicho-banner" id="nichoBanner">
+    <div class="nicho-banner-header">
+      <div class="nicho-banner-icon" id="nichoIcon"></div>
+      <div class="nicho-banner-title" id="nichoTitle"></div>
+      <div class="nicho-banner-sub" id="nichoSub"></div>
+    </div>
+    <div class="nicho-chips" id="nichoChips"></div>
+  </div>
+
+  <div class="seg-selector">
+    <div class="seg-card active" data-seg="tendencia" onclick="setSeg('tendencia')">
+      <div class="seg-icon">🔥</div><div class="seg-name">Tendencia</div>
+      <div class="seg-desc">Viral ahora. Ventana corta, upside alto.</div>
+    </div>
+    <div class="seg-card" data-seg="estacional" onclick="setSeg('estacional')">
+      <div class="seg-icon">📅</div><div class="seg-name">Estacional</div>
+      <div class="seg-desc">Pico predecible. El timing lo es todo.</div>
+    </div>
+    <div class="seg-card" data-seg="cotidiano" onclick="setSeg('cotidiano')">
+      <div class="seg-icon">🔄</div><div class="seg-name">Cotidiano</div>
+      <div class="seg-desc">Demanda constante. Base del negocio.</div>
+    </div>
+  </div>
+  <div class="search-panel" id="searchPanel">
+    <div class="market-tabs">
+      <button class="market-tab active t-amz" data-mkt="amazon" onclick="setMarket('amazon')">🟢 Amazon</button>
+      <button class="market-tab t-meli" data-mkt="meli" onclick="setMarket('meli')">🟡 MeLi</button>
+      <button class="market-tab t-shp" data-mkt="shopify" onclick="setMarket('shopify')">🟩 Shopify</button>
+      <button class="market-tab t-multi" data-mkt="multi" onclick="setMarket('multi')">🔵 Multi-canal</button>
+    </div>
+    <div class="search-row">
+      <div class="input-group">
+        <label class="input-label">Categoría o nicho</label>
+        <input type="text" id="categoryInput" placeholder="ej: cocina, fitness, mascotas, bebés..." />
+      </div>
+      <div class="input-group" style="max-width:155px" id="amazonMktGroup">
+        <label class="input-label">Mercado</label>
+        <select id="amazonMarket">
+          <option value="US">🇺🇸 Amazon US</option>
+          <option value="UK">🇬🇧 Amazon UK</option>
+          <option value="DE">🇩🇪 Amazon DE</option>
+          <option value="CA">🇨🇦 Amazon CA</option>
+        </select>
+      </div>
+      <div class="input-group" style="max-width:155px;display:none" id="meliMktGroup">
+        <label class="input-label">País MeLi</label>
+        <select id="meliMarket">
+          <option value="AR">🇦🇷 Argentina</option>
+          <option value="MX">🇲🇽 México</option>
+          <option value="BR">🇧🇷 Brasil</option>
+          <option value="CL">🇨🇱 Chile</option>
+        </select>
+      </div>
+      <button class="btn-primary" id="searchBtn" onclick="runResearch()">Analizar →</button>
+    </div>
+    <div class="sourcing-row">
+      <div class="src-toggle" onclick="toggleSrc('ali')">
+        <div class="tsw" id="togAli"></div>
+        <span class="src-label ali">Alibaba</span>
+      </div>
+      <div class="src-toggle" onclick="toggleSrc('s16')">
+        <div class="tsw" id="togS16"></div>
+        <span class="src-label s16">1688.com</span>
+      </div>
+    </div>
+  </div>
+  <div class="error-state" id="errorState"></div>
+  <div class="loading" id="loadingState">
+    <div class="loader"></div>
+    <p>Analizando con IA...</p>
+    <div class="loading-steps">
+      <div class="loading-step" id="step1">› Identificando oportunidades del segmento</div>
+      <div class="loading-step" id="step2">› Evaluando demanda y competencia</div>
+      <div class="loading-step" id="step3">› Calculando márgenes y canal óptimo</div>
+      <div class="loading-step" id="step4">› Buscando proveedores</div>
+    </div>
+  </div>
+  <div id="resultsArea">
+    <div class="empty-state"><div class="icon">◎</div><p>Ingresá una categoría para comenzar el research</p></div>
+  </div>
+</div>
+
+<!-- ══ STEP 3: CALCULADORA ══ -->
+<div class="panel" id="panel3">
+  <div class="calc-header">
+    <h2>💰 Decisión de compra</h2>
+    <p>Ingresá los números reales — el sistema calcula si conviene comprar, cuánto y dónde venderlo.</p>
+  </div>
+  <div class="calc-product-banner" id="calcBanner">
+    <div>
+      <div class="cpb-name" id="calcProdName">Sin producto seleccionado</div>
+      <div class="cpb-meta" id="calcProdMeta">← Volvé al paso 2 y seleccioná un producto</div>
+    </div>
+    <button class="cpb-change" onclick="goStep(2)">← Cambiar producto</button>
+  </div>
+  <div class="calc-grid">
+    <div class="calc-section">
+      <h3>Costos del producto</h3>
+      <div class="calc-field">
+        <label>Costo proveedor (USD/unidad)</label>
+        <input type="number" id="cCosto" placeholder="ej: 7.50" step="0.01" oninput="calcular()">
+      </div>
+      <div class="calc-field">
+        <label>Envío marítimo (USD/unidad est.)</label>
+        <input type="number" id="cEnvio" placeholder="ej: 1.20" step="0.01" oninput="calcular()">
+        <div class="calc-field-note">Barco China→AR/EEUU ≈ $0.80–2.00/u según peso</div>
+      </div>
+      <div class="calc-field">
+        <label>Aduanas + prep center (USD/u)</label>
+        <input type="number" id="cAduana" placeholder="ej: 0.80" step="0.01" oninput="calcular()">
+      </div>
+      <div class="calc-field">
+        <label>Packaging / etiquetado (USD/u)</label>
+        <input type="number" id="cPack" placeholder="ej: 0.40" step="0.01" oninput="calcular()">
+      </div>
+    </div>
+    <div class="calc-section">
+      <h3>Parámetros de venta</h3>
+      <div class="calc-field">
+        <label>Precio de venta objetivo (USD)</label>
+        <input type="number" id="cPrecio" placeholder="ej: 29.99" step="0.01" oninput="calcular()">
+      </div>
+      <div class="calc-field">
+        <label>Fee del canal (%)</label>
+        <input type="number" id="cFee" placeholder="ej: 15" step="0.1" oninput="calcular()">
+        <div class="calc-field-note">Amazon FBA≈28–35% · MeLi≈13–18% · Shopify≈5–8%</div>
+      </div>
+      <div class="calc-field">
+        <label>Unidades primer lote</label>
+        <input type="number" id="cUnidades" placeholder="ej: 200" step="1" oninput="calcular()">
+      </div>
+      <div class="calc-field">
+        <label>Ventas estimadas/mes (unidades)</label>
+        <input type="number" id="cVentas" placeholder="ej: 150" step="1" oninput="calcular()">
+      </div>
+    </div>
+  </div>
+  <div class="calc-results" id="calcResults">
+    <h3>Resultados del análisis</h3>
+    <div class="calc-result-grid" id="calcMetrics">
+      <div class="calc-metric"><div class="calc-metric-label">Costo total/u</div><div class="calc-metric-value" style="color:var(--muted)">—</div></div>
+      <div class="calc-metric"><div class="calc-metric-label">Margen neto</div><div class="calc-metric-value" style="color:var(--muted)">—</div></div>
+      <div class="calc-metric"><div class="calc-metric-label">Ganancia/u</div><div class="calc-metric-value" style="color:var(--muted)">—</div></div>
+      <div class="calc-metric"><div class="calc-metric-label">Inversión total</div><div class="calc-metric-value" style="color:var(--muted)">—</div></div>
+      <div class="calc-metric"><div class="calc-metric-label">Break-even</div><div class="calc-metric-value" style="color:var(--muted)">—</div></div>
+      <div class="calc-metric"><div class="calc-metric-label">ROI proyectado</div><div class="calc-metric-value" style="color:var(--muted)">—</div></div>
+    </div>
+    <div class="verdict-bar caution" id="verdictBar">
+      <div>
+        <div class="verdict-text caution" id="verdictText">Completá los campos para ver el veredicto</div>
+        <div class="verdict-sub" id="verdictSub">El sistema calculará automáticamente</div>
+      </div>
+      <div id="verdictIcon" style="font-size:24px">⏳</div>
+    </div>
+  </div>
+  <div class="canal-rec" id="canalRec">
+    <div class="canal-rec-header">
+      <div class="canal-rec-title">Canal óptimo de venta</div>
+      <div class="canal-rec-winner" id="canalWinnerLabel">—</div>
+    </div>
+    <div class="canal-rows" id="canalRows">
+      <div class="canal-row"><div class="canal-row-name amazon">🟢 Amazon FBA</div><div class="canal-row-reason" style="color:var(--muted)">Completá los campos para ver el análisis por canal</div></div>
+      <div class="canal-row"><div class="canal-row-name meli">🟡 MercadoLibre</div><div class="canal-row-reason" style="color:var(--muted)">—</div></div>
+      <div class="canal-row"><div class="canal-row-name shopify">🟩 Shopify DTC</div><div class="canal-row-reason" style="color:var(--muted)">—</div></div>
+    </div>
+  </div>
+  <div style="text-align:right;margin-top:16px">
+    <button class="btn-primary" onclick="goStep(4)" id="btnPlan">Ver plan de acción →</button>
+  </div>
+</div>
+
+<!-- ══ STEP 4: PLAN DE ACCIÓN ══ -->
+<div class="panel" id="panel4">
+  <div class="action-header">
+    <h2>🚀 Plan de acción</h2>
+    <p>Tu checklist de lanzamiento personalizado según el producto y canal seleccionado.</p>
+  </div>
+  <div class="action-grid" id="actionGrid">
+    <div class="empty-state action-full"><div class="icon">◎</div><p>Completá los pasos anteriores para generar el plan</p></div>
+  </div>
+  <div class="export-bar">
+    <button class="btn-export" onclick="exportPlan()">⬇ Exportar plan (.txt)</button>
+    <button class="btn-restart" onclick="restart()">↺ Nuevo análisis</button>
+  </div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let currentStep = 1;
+let activeFecha = null;
+let seg = 'tendencia', market = 'amazon', srcAli = false, srcS16 = false;
+let selectedProduct = null;
+let calcData = {};
+
+// ═══════════════════════════════════════════════
+// FECHAS CLAVE — CATÁLOGO COMPLETO
+// ═══════════════════════════════════════════════
+const FECHAS = [
+  // E-COMMERCE
+  { id:'blackfriday',  emoji:'🖤', name:'Black Friday',        date:'2025-11-28', color:'#FF4757', type:'ecom',       shipDays:55, prepDays:15 },
+  { id:'cybermonday',  emoji:'💻', name:'Cyber Monday',        date:'2025-12-01', color:'#0066FF', type:'ecom',       shipDays:55, prepDays:15 },
+  { id:'cybermondayar',emoji:'🇦🇷', name:'Cyber Monday AR',    date:'2025-12-02', color:'#0066FF', type:'ecom',       shipDays:55, prepDays:15 },
+  { id:'hotsale',      emoji:'🔥', name:'Hot Sale',            date:'2026-05-11', color:'#FF6A00', type:'ecom',       shipDays:50, prepDays:12 },
+  { id:'primeday',     emoji:'📦', name:'Amazon Prime Day',    date:'2026-07-15', color:'#00E5A0', type:'ecom',       shipDays:50, prepDays:15 },
+  // FECHAS SOCIALES
+  { id:'navidad',      emoji:'🎄', name:'Navidad',             date:'2025-12-25', color:'#00E5A0', type:'social',     shipDays:55, prepDays:15 },
+  { id:'anonuevo',     emoji:'🎆', name:'Año Nuevo',           date:'2026-01-01', color:'#FFB800', type:'social',     shipDays:55, prepDays:10 },
+  { id:'valentín',     emoji:'💕', name:'San Valentín',        date:'2026-02-14', color:'#FF3B8B', type:'social',     shipDays:50, prepDays:12 },
+  { id:'pascuas',      emoji:'🐣', name:'Pascuas',             date:'2026-04-05', color:'#96BF48', type:'social',     shipDays:50, prepDays:12 },
+  { id:'madre',        emoji:'💐', name:'Día de la Madre',     date:'2026-05-17', color:'#FF3B8B', type:'social',     shipDays:50, prepDays:10 },
+  { id:'padre',        emoji:'👔', name:'Día del Padre',       date:'2026-06-21', color:'#0066FF', type:'social',     shipDays:50, prepDays:10 },
+  { id:'mundial',      emoji:'⚽', name:'Mundial 2026',        date:'2026-06-11', color:'#FF6A00', type:'social',     shipDays:55, prepDays:20 },
+  { id:'nino',         emoji:'🧸', name:'Día del Niño',        date:'2026-08-09', color:'#FFB800', type:'social',     shipDays:55, prepDays:15 },
+  { id:'primavera',    emoji:'🌸', name:'Día de la Primavera', date:'2026-09-21', color:'#96BF48', type:'social',     shipDays:55, prepDays:12 },
+  { id:'maestro',      emoji:'📚', name:'Día del Maestro',     date:'2026-09-11', color:'#96BF48', type:'social',     shipDays:55, prepDays:12 },
+  { id:'halloween',    emoji:'🎃', name:'Halloween',           date:'2026-10-31', color:'#FF6A00', type:'social',     shipDays:55, prepDays:15 },
+  // VACACIONES
+  { id:'vacverano',    emoji:'☀️', name:'Vacaciones de Verano', date:'2026-01-20', color:'#FFB800', type:'vacaciones', shipDays:50, prepDays:10 },
+  { id:'vacinvierno',  emoji:'⛷️', name:'Vacaciones de Invierno',date:'2026-07-15',color:'#0066FF',type:'vacaciones', shipDays:50, prepDays:12 },
+  // PREVACACIONES
+  { id:'prevverano',   emoji:'🌊', name:'Pre-vacaciones Verano', date:'2025-12-15', color:'#FF9500', type:'prevac',   shipDays:50, prepDays:10 },
+  { id:'previnvierno', emoji:'🧥', name:'Pre-vacaciones Invierno',date:'2026-06-15',color:'#FF9500',type:'prevac',   shipDays:50, prepDays:10 },
+  // VUELTA AL COLE
+  { id:'cole',         emoji:'🎒', name:'Vuelta al Cole',       date:'2026-03-02', color:'#96BF48', type:'social',   shipDays:45, prepDays:10 },
+];
+
+function getDaysUntil(dateStr) {
+  const now = new Date(); now.setHours(0,0,0,0);
+  const t = new Date(dateStr+'T12:00:00');
+  return Math.ceil((t - now) / 86400000);
+}
+function addDays(dateStr, days) {
+  const d = new Date(dateStr+'T12:00:00');
+  d.setDate(d.getDate() + days);
+  return d;
+}
+function fmtDate(d) {
+  return d.toLocaleDateString('es-AR',{day:'2-digit',month:'short'});
+}
+function fmtDateFull(d) {
+  return d.toLocaleDateString('es-AR',{day:'2-digit',month:'short',year:'numeric'});
+}
+
+function renderFechas(filter='all') {
+  const grid = document.getElementById('fechasGrid');
+  const list = filter === 'all' ? FECHAS : FECHAS.filter(f => f.type === filter);
+  grid.innerHTML = list.map(f => {
+    const days = getDaysUntil(f.date);
+    const isPast = days < 0;
+    const cdClass = isPast ? 'past' : days <= 20 ? 'urgent' : days <= 50 ? 'warning' : 'ok';
+    const cdText = isPast ? 'Pasó' : days === 0 ? '¡HOY!' : `${days}d`;
+    const typeLabels = {ecom:'E-COM',social:'SOCIAL',vacaciones:'VACAC.',prevac:'PRE-VAC'};
+    return `<div class="fecha-card" data-fid="${f.id}" style="--fc:${f.color}" onclick="selectFecha('${f.id}')">
+      <div class="fecha-emoji">${f.emoji}</div>
+      <div class="fecha-name">${f.name}</div>
+      <div class="fecha-date">${fmtDateFull(new Date(f.date+'T12:00:00'))}</div>
+      <div class="fecha-type ${f.type}">${typeLabels[f.type]||f.type}</div>
+      <div class="fecha-countdown ${cdClass}">${isPast?'—':cdText+' restantes'}</div>
+    </div>`;
+  }).join('');
+}
+
+function filterFechas(type) {
+  document.querySelectorAll('.cfilter').forEach(b => b.classList.toggle('active', b.dataset.type === type));
+  renderFechas(type);
+}
+
+function selectFecha(fid) {
+  activeFecha = activeFecha === fid ? null : fid;
+  document.querySelectorAll('.fecha-card').forEach(c => c.classList.toggle('active', c.dataset.fid === activeFecha));
+  if (!activeFecha) { closeSP(); clearNichos(); return; }
+  showSP(FECHAS.find(f => f.id === fid));
+}
+
+function showSP(f) {
+  const daysLeft = getDaysUntil(f.date);
+  const orderDeadline = addDays(f.date, -(f.shipDays + f.prepDays));
+  const shipDate = addDays(f.date, -f.shipDays);
+  const arriveDate = addDays(f.date, -15);
+  const daysToOrder = getDaysUntil(orderDeadline.toISOString().split('T')[0]);
+  const status = daysLeft < 0 ? 'past' : daysToOrder > 20 ? 'ok' : daysToOrder > 0 ? 'warning' : 'urgent';
+  const panel = document.getElementById('shippingPanel');
+  panel.className = 'shipping-panel visible ' + (status === 'past' ? 'urgent' : status);
+  const msgs = {
+    past: `📍 ${f.emoji} ${f.name} ya pasó. Preparate para el próximo ciclo.`,
+    ok: `✅ TIMING OK — ${f.emoji} ${f.name} en ${daysLeft} días. Tenés margen para ordenar por barco.`,
+    warning: `⚠ TIMING AJUSTADO — ${f.emoji} ${f.name} en ${daysLeft} días. Hay que ordenar esta semana.`,
+    urgent: `🚨 TIMING CRÍTICO — La ventana de barco se cerró. Evaluá envío aéreo o stock local.`
+  };
+  document.getElementById('spTitle').textContent = msgs[status];
+  document.getElementById('spTitle').className = 'sp-title ' + (status === 'past' ? 'urgent' : status);
+  document.getElementById('spSubtitle').textContent = `Envío marítimo: ~${f.shipDays} días · Producción: ~${f.prepDays} días`;
+  const steps = [
+    { icon:'🏭', label:'Ordenar', date: orderDeadline, note:`${f.prepDays}d producción` },
+    { icon:'📦', label:'Listo China', date: shipDate, note:'Sale el barco' },
+    { icon:'🚢', label:'En tránsito', date: addDays(f.date, -Math.round(f.shipDays/2)), note:`~${f.shipDays}d navegando` },
+    { icon:'🛃', label:'Llega + aduana', date: arriveDate, note:'~15d aduana/prep' },
+    { icon:f.emoji, label:f.name, date: new Date(f.date+'T12:00:00'), note:'Fecha objetivo' },
+  ];
+  document.getElementById('spTimeline').innerHTML = steps.map(s => {
+    const d = getDaysUntil(s.date.toISOString().split('T')[0]);
+    const cls = d < 0 ? 'past' : d < 10 ? 'tight' : 'good';
+    return `<div class="sp-step"><div class="sp-step-icon">${s.icon}</div><div class="sp-step-label">${s.label}</div><div class="sp-step-date ${cls}">${fmtDate(s.date)}</div><div class="sp-step-sub">${s.note}</div></div>`;
+  }).join('');
+  const notes = {
+    past: 'Esta fecha ya pasó. Podés usar este análisis para planificar el próximo ciclo con anticipación.',
+    ok: `Tenés tiempo para envío marítimo (más económico). Fecha límite de orden: ${fmtDate(orderDeadline)}. Después de esa fecha solo queda envío aéreo (3–5x más caro).`,
+    warning: `Margen muy ajustado para barco. Ordená HOY antes del ${fmtDate(orderDeadline)}. Si no podés, calculá si el margen soporta envío aéreo.`,
+    urgent: `La ventana marítima cerró. Opciones: (1) Aéreo express ~$5–8/kg. (2) Stock local en Argentina. (3) Proyectar para el próximo año.`
+  };
+  document.getElementById('spNote').textContent = notes[status];
+  document.getElementById('spNote').className = 'sp-note ' + (status === 'past' ? 'urgent' : status);
+  panel.scrollIntoView({behavior:'smooth', block:'nearest'});
+}
+
+function closeSP() {
+  document.getElementById('shippingPanel').classList.remove('visible');
+  activeFecha = null;
+  document.querySelectorAll('.fecha-card').forEach(c => c.classList.remove('active'));
+}
+
+// ═══════════════════════════════════════════════
+// NICHOS POR FECHA
+// ═══════════════════════════════════════════════
+const NICHOS = {
+  blackfriday:   { seg:'tendencia', chipType:'ecom-chip',      rubros:['Electrónica','Auriculares','Smart Home','Fitness','Ropa','Juguetes','Perfumes','Valijas','Gaming','Sillas ergonómicas'] },
+  cybermonday:   { seg:'tendencia', chipType:'ecom-chip',      rubros:['Electrónica','Gadgets','Accesorios PC','Software','Libros digitales','Cursos','Smart Home','Auriculares','Tablets'] },
+  cybermondayar: { seg:'tendencia', chipType:'ecom-chip',      rubros:['Electrónica','Indumentaria','Calzado','Hogar','Juguetes','Deportes','Belleza','Libros','Accesorios celular'] },
+  hotsale:       { seg:'tendencia', chipType:'ecom-chip',      rubros:['Indumentaria','Calzado','Electrónica','Hogar','Muebles','Colchones','Electrodomésticos','Turismo','Libros'] },
+  primeday:      { seg:'tendencia', chipType:'ecom-chip',      rubros:['Electrónica','Smart Home','Cocina','Fitness','Libros','Herramientas','Belleza','Mascotas','Oficina en casa'] },
+  navidad:       { seg:'estacional', chipType:'',              rubros:['Juguetes','Decoración navideña','Kits regalo','Perfumes','Chocolates','Ropa','Electrónica','Adornos','Velas','Libros'] },
+  anonuevo:      { seg:'estacional', chipType:'',              rubros:['Decoración fiesta','Cotillón','Ropa de fiesta','Fuegos artificiales','Accesorios bar','Velas','Agenda planners'] },
+  valentín:      { seg:'estacional', chipType:'',              rubros:['Joyería','Perfumes','Chocolates','Flores artificiales','Ropa interior','Velas','Spa en casa','Kits regalo pareja'] },
+  pascuas:       { seg:'estacional', chipType:'',              rubros:['Chocolates','Huevos decorativos','Decoración','Juguetes niños','Canastas regalo','Artesanías'] },
+  madre:         { seg:'estacional', chipType:'',              rubros:['Belleza','Spa en casa','Perfumes','Joyería','Flores artificiales','Cocina','Ropa','Kits cuidado personal','Velas','Tazas personalizadas'] },
+  padre:         { seg:'estacional', chipType:'',              rubros:['Herramientas','BBQ/asado','Indumentaria','Electrónica','Deportes','Relojes','Perfumes','Accesorios auto','Libros','Kits mate'] },
+  mundial:       { seg:'tendencia', chipType:'tendencia-chip', rubros:['Indumentaria deportiva','Accesorios fan','Decoración','Snacks/BBQ','Televisores','Banderas','Camisetas','Artículos coleccionables'] },
+  nino:          { seg:'estacional', chipType:'',              rubros:['Juguetes','Juegos de mesa','Figuritas','LEGO','Libros infantiles','Arte y manualidades','Outdoor niños','Ropa infantil'] },
+  primavera:     { seg:'estacional', chipType:'',              rubros:['Jardinería','Ropa liviana','Deportes outdoor','Bicicletas','Piscinas','Accesorios parque','Plantas','Perfumes florales'] },
+  maestro:       { seg:'estacional', chipType:'',              rubros:['Kits escritorio','Tazas','Libros','Artículos personalizados','Plantas de escritorio','Agenda planners','Chocolates'] },
+  halloween:     { seg:'estacional', chipType:'',              rubros:['Disfraces','Decoración terror','Maquillaje especial','Dulces','Cotillón','Accesorios fiesta','Velas negras'] },
+  vacverano:     { seg:'estacional', chipType:'',              rubros:['Ropa de baño','Accesorios playa','Protector solar','Valijas','Juguetes agua','Colchonetas','Mate y termo','Lentes de sol','Camping'] },
+  vacinvierno:   { seg:'estacional', chipType:'',              rubros:['Ropa de abrigo','Ski/snowboard','Juegos de mesa','Libros','Chocolate caliente','Mantas','Calzado invierno','Termo y mate'] },
+  prevverano:    { seg:'estacional', chipType:'',              rubros:['Trajes de baño','Accesorios playa','Valijas','Protector solar','Snorkeling','Cámaras acuáticas','Sandalias','Cremas bronceadoras'] },
+  previnvierno:  { seg:'estacional', chipType:'',              rubros:['Camperas','Botas','Guantes','Bufandas','Calefactores','Termo','Mantas eléctricas','Tazas térmicas'] },
+  cole:          { seg:'estacional', chipType:'',              rubros:['Mochilas','Útiles escolares','Loncheras','Botella agua','Organización escritorio','Auriculares estudio','Ropa escolar','Calculadoras'] },
+};
+
+function renderNichos(fechaId) {
+  const f = FECHAS.find(x=>x.id===fechaId);
+  const n = NICHOS[fechaId];
+  if(!f||!n) return;
+
+  // Auto-set segmento
+  setSeg(n.seg);
+
+  const banner = document.getElementById('nichoBanner');
+  banner.style.borderLeftColor = f.color;
+  document.getElementById('nichoIcon').textContent = f.emoji;
+  document.getElementById('nichoTitle').textContent = `Rubros sugeridos para ${f.name}`;
+  document.getElementById('nichoSub').textContent = n.seg.toUpperCase();
+
+  document.getElementById('nichoChips').innerHTML = n.rubros.map(r =>
+    `<button class="nicho-chip ${n.chipType}" onclick="selectNicho(this,'${r}')">${r}</button>`
+  ).join('');
+
+  banner.classList.add('visible');
+}
+
+function selectNicho(el, rubro) {
+  document.querySelectorAll('.nicho-chip').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('categoryInput').value = rubro;
+  document.getElementById('categoryInput').focus();
+}
+
+function clearNichos() {
+  document.getElementById('nichoBanner').classList.remove('visible');
+  document.getElementById('nichoChips').innerHTML = '';
+}
+
+function goStep(n) {
+  currentStep = n;
+  document.querySelectorAll('.panel').forEach((p,i) => p.classList.toggle('active', i+1 === n));
+  document.querySelectorAll('.step-btn').forEach((b,i) => {
+    b.classList.remove('active','done');
+    if (i+1 === n) b.classList.add('active');
+    else if (i+1 < n) b.classList.add('done');
+  });
+  // When entering step 2, render nichos if a fecha is active
+  if(n === 2 && activeFecha) renderNichos(activeFecha);
+  else if(n === 2 && !activeFecha) clearNichos();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ═══════════════════════════════════════════════
+// STEP 2: RESEARCH
+// ═══════════════════════════════════════════════
+function setSeg(s) {
+  seg = s;
+  document.querySelectorAll('.seg-card').forEach(c => c.classList.toggle('active', c.dataset.seg === s));
+  const cols = {tendencia:'var(--tendencia)',estacional:'var(--estacional)',cotidiano:'var(--cotidiano)'};
+  document.getElementById('searchPanel').style.setProperty('--pc', cols[s]);
+}
+function setMarket(m) {
+  market = m;
+  document.querySelectorAll('.market-tab').forEach(t => t.classList.toggle('active', t.dataset.mkt === m));
+  document.getElementById('amazonMktGroup').style.display = m === 'amazon' ? '' : 'none';
+  document.getElementById('meliMktGroup').style.display = m === 'meli' ? '' : 'none';
+}
+function toggleSrc(type) {
+  if (type==='ali') { srcAli=!srcAli; document.getElementById('togAli').className='tsw'+(srcAli?' on-ali':''); }
+  else { srcS16=!srcS16; document.getElementById('togS16').className='tsw'+(srcS16?' on-s16':''); }
+}
+
+document.getElementById('searchPanel').style.setProperty('--pc','var(--tendencia)');
+document.getElementById('categoryInput').addEventListener('keydown', e => { if(e.key==='Enter') runResearch(); });
+
+function getScoreColor(s) { return s>=75?'#00E5A0':s>=55?'#FFB800':'#FF4757'; }
+function getTagClass(t) {
+  if(['TENDENCIA','VIRAL','VENTANA','PRE-PICO'].some(x=>t.includes(x))) return 'tend-tag';
+  if(['ESTACIONAL','SEASONAL'].some(x=>t.includes(x))) return 'seas-tag';
+  if(['EVERGREEN','NICHO','DEFENSIBLE','ESCALABLE','ALTO','BAJA','DOBLE','SHOPIFY','DTC','GIFT','BAJO','MULTI'].some(x=>t.includes(x))) return 'cot-tag';
+  if(['RIESGO','MODERADO'].some(x=>t.includes(x))) return 'warning';
+  if(['SATURADO'].some(x=>t.includes(x))) return 'danger';
+  return 'info';
+}
+
+// Canal recommendation logic (no AI needed)
+function recCanal(p, seg) {
+  const precio = parseFloat((p.precio_venta_usd||'0').replace('$',''));
+  const demandaStr = p.demanda_mensual||'0';
+  const demanda = parseInt(demandaStr.replace(/[^0-9]/g,''))||0;
+  const comp = p.competencia||'Media';
+
+  if (seg === 'tendencia') return 'shopify'; // velocidad viral
+  if (precio < 15) return 'meli';            // precio bajo → MeLi
+  if (precio > 50 && comp !== 'Alta') return 'amazon'; // ticket alto → Amazon
+  if (p.shipping_libre_viable) return 'meli'; // MeLi con envío gratis
+  if (demanda > 2000) return 'amazon';        // alta demanda → Amazon
+  if (seg === 'cotidiano') return 'amazon';   // base estable → Amazon
+  return 'multi';
+}
+
+function buildPrompt(category, seg, market, mktSub, withAli, withS16, fechaHint) {
+  const segDefs = {
+    tendencia:'productos VIRALES o en tendencia explosiva en 2025–2026. Ventana corta, upside alto.',
+    estacional:`productos con demanda estacional. ${fechaHint?'Contexto: '+fechaHint:''} Considerá fechas clave y estaciones hemisferio sur.`,
+    cotidiano:'productos de uso diario, demanda constante todo el año, predecibles y defensibles.'
+  };
+  const segExtra = seg==='estacional' ? '"meses_pico":["MES1","MES2"],"meses_prep":["MES1"],' : seg==='tendencia' ? '"tendencia_insight":"razón y duración estimada de la ventana",' : '"cotidiano_insight":"razón de defensibilidad del nicho",';
+  const aliBlock = withAli ? '"alibaba":[{"nombre":"Empresa","precio_usd_unidad":"$X–$Y","moq":"XXX u","rating":"4.X★","tiempo_entrega":"XX–XX días"}]' : '"alibaba":null';
+  const s16Block = withS16 ? '"s1688":[{"nombre":"Empresa","precio_rmb_unidad":"¥XX–¥XX","precio_usd_equiv":"~$X–$X","moq":"XXX u"}]' : '"s1688":null';
+  let mktMetrics = '';
+  if(market==='amazon') mktMetrics='"precio_venta_usd":"$XX","costo_estimado_usd":"$X–XX","margen_estimado":"XX%","demanda_mensual":"X.XXX unid/mes","competencia":"Baja|Media|Alta","tendencia_mercado":"Creciente|Estable|Bajando"';
+  else if(market==='meli') mktMetrics='"precio_venta_ars":"$XX.000","precio_venta_usd_equiv":"$XX","costo_estimado_usd":"$X–XX","margen_estimado":"XX%","demanda_mensual":"XXX unid/mes","competencia":"Baja|Media|Alta","shipping_libre_viable":true';
+  else if(market==='shopify') mktMetrics='"precio_venta_usd":"$XX","costo_estimado_usd":"$X–XX","margen_estimado":"XX%","aov_estimado":"$XX","canal_adquisicion":"TikTok Ads|Meta","cac_estimado":"$X–XX","competencia":"Baja|Media|Alta"';
+  else mktMetrics='"costo_estimado_usd":"$X–XX","amazon":{"precio":"$XX","margen":"XX%","demanda":"X.XXX/mes","competencia":"Media"},"meli":{"precio_usd":"$XX","margen":"XX%","demanda":"XXX/mes","competencia":"Baja"},"shopify":{"precio":"$XX","margen":"XX%","canal":"TikTok|Meta"}';
+  return `Experto en e-commerce 10 años. Analizá "${category}" para ${market==='multi'?'Amazon US + MeLi AR + Shopify':market+' '+mktSub}. Segmento: ${segDefs[seg]}. Devolvé SOLO JSON sin texto ni backticks:
+{"productos":[{"nombre":"Nombre MUY específico","nicho":"sub-nicho concreto","descripcion":"2 oraciones concretas de oportunidad","score_oportunidad":82,"segmento":"${seg}",${segExtra}${mktMetrics},"pros":["pro1","pro2","pro3"],"contras":["contra1","contra2"],"keywords_principales":["kw1","kw2","kw3","kw4","kw5"],"tags":["TAG1","TAG2"],"alerta":null,${aliBlock},${s16Block}}]}
+4 productos. Tags: TENDENCIA 2025-26, VIRAL TIKTOK, VENTANA CORTA, EVERGREEN, NICHO DEFENSIBLE, ALTO MARGEN, BAJA COMPETENCIA, ESCALABLE, MULTI-CANAL, GIFT-FRIENDLY, BAJO COSTO ENTRADA, SHOPIFY NATIVO, RIESGO MODERADO, SATURADO.`;
+}
+
+async function runResearch() {
+  const category = document.getElementById('categoryInput').value.trim();
+  if(!category) { document.getElementById('categoryInput').focus(); return; }
+  const mktSub = market==='amazon'?document.getElementById('amazonMarket').value:market==='meli'?document.getElementById('meliMarket').value:'';
+  const fechaHint = activeFecha ? FECHAS.find(f=>f.id===activeFecha)?.name : null;
+  document.getElementById('searchBtn').disabled = true;
+  document.getElementById('loadingState').classList.add('active');
+  document.getElementById('resultsArea').innerHTML = '';
+  document.getElementById('errorState').classList.remove('visible');
+  ['step1','step2','step3','step4'].forEach((s,i) => {
+    const el = document.getElementById(s); el.classList.remove('visible','done');
+    setTimeout(()=>el.classList.add('visible'),i*900);
+    setTimeout(()=>{el.classList.add('done');el.classList.remove('visible');},i*900+700);
+  });
+  try {
+    const resp = await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:buildPrompt(category,seg,market,mktSub,srcAli,srcS16,fechaHint)}]})});
+    const data = await resp.json();
+    if(!resp.ok||data.error) throw new Error(data.error?.message||'Error API');
+    const raw = data.content.map(b=>b.text||'').join('');
+    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
+    renderResults(parsed.productos, category, mktSub);
+  } catch(err) {
+    document.getElementById('errorState').textContent='Error: '+err.message;
+    document.getElementById('errorState').classList.add('visible');
+  } finally {
+    document.getElementById('loadingState').classList.remove('active');
+    document.getElementById('searchBtn').disabled=false;
+  }
+}
+
+function renderResults(productos, category, mktSub) {
+  const segLabels = {tendencia:'🔥 Tendencia',estacional:'📅 Estacional',cotidiano:'🔄 Cotidiano'};
+  const mktLabel = market==='amazon'?'Amazon '+mktSub:market==='meli'?'MeLi '+mktSub:market==='shopify'?'Shopify DTC':'Multi-canal';
+  const header = `<div class="results-header"><div class="results-title"><span>${productos.length} productos</span> · ${category.toUpperCase()} · ${mktLabel} · ${segLabels[seg]}</div></div>`;
+  const cards = productos.map((p,i) => {
+    const score = p.score_oportunidad;
+    const color = getScoreColor(score);
+    const circ = 2*Math.PI*26, offset = circ-(score/100)*circ;
+    const segClass = p.segmento||seg;
+    const canalRec = recCanal(p, seg);
+    const canalLabels = {amazon:'🟢 Vender en Amazon',meli:'🟡 Vender en MeLi',shopify:'🟩 Vender en Shopify',multi:'🔵 Multi-canal'};
+    const tagHtml = (p.tags||[]).map(t=>`<span class="tag ${getTagClass(t)}">${t}</span>`).join('');
+    const alertTag = p.alerta?`<span class="tag warning">⚠ ${p.alerta}</span>`:'';
+    let insight='';
+    if(p.tendencia_insight) insight=`<div style="font-size:11px;color:var(--tendencia);margin-bottom:10px;padding:6px 10px;border-left:2px solid var(--tendencia);background:rgba(255,59,139,0.04)">🔥 ${p.tendencia_insight}</div>`;
+    else if(p.cotidiano_insight) insight=`<div style="font-size:11px;color:var(--cotidiano);margin-bottom:10px;padding:6px 10px;border-left:2px solid var(--cotidiano);background:rgba(0,229,160,0.04)">🔄 ${p.cotidiano_insight}</div>`;
+    else if(p.meses_pico) insight=`<div style="font-size:11px;color:var(--estacional);margin-bottom:10px;padding:6px 10px;border-left:2px solid var(--estacional);background:rgba(255,149,0,0.04)">📅 Pico: ${(p.meses_pico||[]).join(' · ')} · Preparar: ${(p.meses_prep||[]).join(' · ')}</div>`;
+    let metrics='';
+    if(market==='amazon') metrics=[['PRECIO',p.precio_venta_usd,'green'],['COSTO',p.costo_estimado_usd,''],['MARGEN',p.margen_estimado,'amber-c'],['DEMANDA',p.demanda_mensual,''],['COMP.',p.competencia,p.competencia==='Baja'?'green':p.competencia==='Alta'?'red-c':'amber-c']].map(([l,v,c])=>`<div class="metric"><span class="metric-label">${l}</span><span class="metric-value ${c}">${v||'—'}</span></div>`).join('');
+    else if(market==='meli') metrics=[['ARS',p.precio_venta_ars,'meli-c'],['USD',p.precio_venta_usd_equiv,'green'],['COSTO',p.costo_estimado_usd,''],['MARGEN',p.margen_estimado,'amber-c'],['ENVÍO ✓',p.shipping_libre_viable?'Viable':'No',p.shipping_libre_viable?'green':'red-c']].map(([l,v,c])=>`<div class="metric"><span class="metric-label">${l}</span><span class="metric-value ${c}">${v||'—'}</span></div>`).join('');
+    else if(market==='shopify') metrics=[['PRECIO',p.precio_venta_usd,'green'],['MARGEN',p.margen_estimado,'amber-c'],['AOV',p.aov_estimado,''],['CAC',p.cac_estimado,'amber-c'],['CANAL',p.canal_adquisicion,'shp-c']].map(([l,v,c])=>`<div class="metric"><span class="metric-label">${l}</span><span class="metric-value ${c}">${v||'—'}</span></div>`).join('');
+    else metrics=[['COSTO',p.costo_estimado_usd,''],['AMZ mg',p.amazon?.margen,'green'],['MELI mg',p.meli?.margen,'meli-c'],['SHOPIFY',p.shopify?.margen,'shp-c']].map(([l,v,c])=>`<div class="metric"><span class="metric-label">${l}</span><span class="metric-value ${c}">${v||'—'}</span></div>`).join('');
+    const prosHtml=(p.pros||[]).map(x=>`<li>${x}</li>`).join('');
+    const contrasHtml=(p.contras||[]).map(x=>`<li>${x}</li>`).join('');
+    const kwHtml=(p.keywords_principales||[]).map(k=>`<span class="keyword">${k}</span>`).join('');
+    let sourcingHtml='';
+    const hasAli=p.alibaba&&p.alibaba.length, hasS16=p.s1688&&p.s1688.length;
+    if(hasAli||hasS16){
+      let blocks='';
+      if(hasAli) blocks+=`<div class="sourcing-block alibaba"><h4>◈ Alibaba</h4>${p.alibaba.map(s=>`<div class="supplier-item"><div class="supplier-name">${s.nombre}</div><div class="supplier-meta"><span>MOQ: ${s.moq}</span><span>${s.tiempo_entrega}</span><span>${s.rating}</span></div><div class="supplier-price ali">${s.precio_usd_unidad}</div></div>`).join('')}</div>`;
+      if(hasS16) blocks+=`<div class="sourcing-block s1688"><h4>◈ 1688.com</h4>${p.s1688.map(s=>`<div class="supplier-item"><div class="supplier-name">${s.nombre}</div><div class="supplier-meta"><span>MOQ: ${s.moq}</span></div><div class="supplier-price s16">${s.precio_rmb_unidad} <span style="font-size:10px;color:var(--accent)">≈${s.precio_usd_equiv}</span></div></div>`).join('')}</div>`;
+      sourcingHtml=`<div class="sourcing-grid">${blocks}</div>`;
+    }
+    return `<div class="product-card" style="animation-delay:${i*0.07}s">
+      <div class="card-seg-bar ${segClass}"></div>
+      <div class="card-top">
+        <div>
+          <div class="product-niche">${p.nicho}</div>
+          <div class="product-name">${p.nombre}</div>
+          <div class="product-desc">${p.descripcion}</div>
+          ${insight}
+          <div class="metrics-row">${metrics}</div>
+          <div class="canal-badge ${canalRec}">${canalLabels[canalRec]}</div>
+        </div>
+        <div class="score-block">
+          <div class="score-ring"><svg width="58" height="58" viewBox="0 0 64 64"><circle class="ring-bg" cx="32" cy="32" r="26"/><circle class="ring-fill" cx="32" cy="32" r="26" stroke="${color}" stroke-dasharray="${circ}" stroke-dashoffset="${offset}"/></svg><div class="score-number" style="color:${color}">${score}</div></div>
+          <div class="score-label">Score</div>
+        </div>
+      </div>
+      <div class="tags-row">${tagHtml}${alertTag}</div>
+      <div class="card-actions">
+        <button class="btn-select" onclick="selectProduct(${JSON.stringify(p).replace(/"/g,'&quot;')})">Seleccionar este producto →</button>
+        <button class="btn-detail" onclick="this.closest('.product-card').querySelector('.card-expand').classList.toggle('open');this.textContent=this.textContent.includes('Ver')?'Ocultar detalle':'Ver detalle'">Ver detalle</button>
+      </div>
+      <div class="card-expand">
+        <div class="expand-grid">
+          <div class="expand-section"><h4>✓ Ventajas</h4><ul>${prosHtml}</ul></div>
+          <div class="expand-section"><h4>✗ Riesgos</h4><ul>${contrasHtml}</ul></div>
+          <div class="expand-section" style="grid-column:1/-1"><h4>Keywords principales</h4><div class="keyword-list">${kwHtml}</div></div>
+          ${sourcingHtml}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('resultsArea').innerHTML = header + `<div class="products-grid">${cards}</div>`;
+}
+
+function selectProduct(p) {
+  selectedProduct = typeof p === 'string' ? JSON.parse(p) : p;
+  const canalRec = recCanal(selectedProduct, seg);
+  // Pre-fill calculadora
+  const costoStr = (selectedProduct.costo_estimado_usd||selectedProduct.costo_estimado||'').replace(/[^0-9.–\-]/g,'');
+  const costoMid = costoStr.includes('–') ? ((parseFloat(costoStr)+parseFloat(costoStr.split('–')[1]))/2).toFixed(2) : parseFloat(costoStr)||'';
+  const precioStr = (selectedProduct.precio_venta_usd||selectedProduct.precio_venta_usd_equiv||'').replace(/[^0-9.]/g,'');
+  if(costoMid) document.getElementById('cCosto').value = costoMid;
+  if(precioStr) document.getElementById('cPrecio').value = precioStr;
+  // Canal fees
+  const fees = {amazon:'30',meli:'15',shopify:'6',multi:'20'};
+  document.getElementById('cFee').value = fees[canalRec]||'20';
+  // Banner
+  document.getElementById('calcProdName').textContent = selectedProduct.nombre;
+  document.getElementById('calcProdMeta').textContent = selectedProduct.nicho + ' · Canal recomendado: ' + ({amazon:'Amazon FBA',meli:'MercadoLibre',shopify:'Shopify',multi:'Multi-canal'}[canalRec]);
+  calcular();
+  goStep(3);
+}
+
+// ═══════════════════════════════════════════════
+// STEP 3: CALCULADORA
+// ═══════════════════════════════════════════════
+function calcular() {
+  const costo = parseFloat(document.getElementById('cCosto').value)||0;
+  const envio = parseFloat(document.getElementById('cEnvio').value)||0;
+  const aduana = parseFloat(document.getElementById('cAduana').value)||0;
+  const pack = parseFloat(document.getElementById('cPack').value)||0;
+  const precio = parseFloat(document.getElementById('cPrecio').value)||0;
+  const fee = parseFloat(document.getElementById('cFee').value)||0;
+  const unidades = parseInt(document.getElementById('cUnidades').value)||0;
+  const ventas = parseInt(document.getElementById('cVentas').value)||0;
+
+  if(!costo||!precio) return;
+
+  const costoTotal = costo + envio + aduana + pack;
+  const feeAmt = precio * (fee/100);
+  const gananciaU = precio - costoTotal - feeAmt;
+  const margenPct = precio > 0 ? (gananciaU/precio*100) : 0;
+  const inversion = costoTotal * (unidades||1);
+  const breakEvenUnits = gananciaU > 0 ? Math.ceil(inversion / gananciaU) : 999;
+  const breakEvenDays = ventas > 0 ? Math.ceil(breakEvenUnits / (ventas/30)) : null;
+  const roiMensual = ventas > 0 && inversion > 0 ? ((gananciaU * ventas) / inversion * 100) : 0;
+
+  // Metrics
+  const mClass = (val, good, warn) => val >= good ? 'highlight' : val >= warn ? 'warn' : 'danger';
+  document.getElementById('calcMetrics').innerHTML = [
+    { label:'Costo total/u', val:`$${costoTotal.toFixed(2)}`, sub:'prod+envío+aduana+pack', cls:'' },
+    { label:'Margen neto', val:`${margenPct.toFixed(1)}%`, sub:'sobre precio de venta', cls:mClass(margenPct,35,20) },
+    { label:'Ganancia/u', val:`$${gananciaU.toFixed(2)}`, sub:'después de todos los costos', cls:mClass(gananciaU,8,3) },
+    { label:'Inversión total', val:`$${inversion.toFixed(0)}`, sub:`${unidades||'—'} unidades`, cls:'' },
+    { label:'Break-even', val:breakEvenDays?`${breakEvenDays}d`:`${breakEvenUnits}u`, sub:breakEvenDays?'días para recuperar':'unidades para recuperar', cls:mClass(breakEvenDays?60-breakEvenDays:30-breakEvenUnits,20,0) },
+    { label:'ROI/mes', val:roiMensual>0?`${roiMensual.toFixed(0)}%`:'—', sub:'sobre inversión inicial', cls:mClass(roiMensual,30,10) },
+  ].map(m=>`<div class="calc-metric ${m.cls}"><div class="calc-metric-label">${m.label}</div><div class="calc-metric-value">${m.val}</div><div class="calc-metric-sub">${m.sub}</div></div>`).join('');
+
+  calcData = { costoTotal, gananciaU, margenPct, inversion, breakEvenDays, roiMensual, precio, ventas, unidades, fee };
+
+  // Veredicto
+  const vBar = document.getElementById('verdictBar');
+  const vText = document.getElementById('verdictText');
+  const vSub = document.getElementById('verdictSub');
+  const vIcon = document.getElementById('verdictIcon');
+  if(margenPct >= 35 && gananciaU >= 8) {
+    vBar.className='verdict-bar go'; vText.className='verdict-text go';
+    vText.textContent='✅ COMPRAR — Los números cierran bien'; vIcon.textContent='🚀';
+    vSub.textContent=`Margen ${margenPct.toFixed(1)}% · Ganancia $${gananciaU.toFixed(2)}/u · Break-even ${breakEvenDays||'—'}d`;
+  } else if(margenPct >= 20 && gananciaU >= 3) {
+    vBar.className='verdict-bar caution'; vText.className='verdict-text caution';
+    vText.textContent='⚠ EVALUAR — Margen ajustado, depende del volumen'; vIcon.textContent='🤔';
+    vSub.textContent='Considerá reducir costo de proveedor o subir el precio de venta';
+  } else {
+    vBar.className='verdict-bar stop'; vText.className='verdict-text stop';
+    vText.textContent='🛑 NO COMPRAR — El margen no cubre los riesgos'; vIcon.textContent='⛔';
+    vSub.textContent='Buscá un proveedor más barato o un canal con menores fees';
+  }
+
+  // Canal recommendation
+  renderCanalRec();
+}
+
+function renderCanalRec() {
+  if(!selectedProduct && !calcData.precio) return;
+  const p = selectedProduct || {};
+  const segActual = seg;
+  const { margenPct=0, gananciaU=0, precio=0 } = calcData;
+
+  const canales = {
+    amazon: {
+      name:'🟢 Amazon FBA', cls:'amazon',
+      margen: margenPct > 0 ? `${(margenPct-14).toFixed(0)}%` : '—',
+      fee: '~28–35%',
+      razon: precio > 20 && margenPct > 35 ? 'Alto volumen orgánico, ideal para este ticket. FBA fee absorbible con este margen.' : precio < 15 ? 'Precio bajo — FBA fees van a comprimir mucho el margen.' : 'Viable si lográs reviews iniciales rápido.',
+    },
+    meli: {
+      name:'🟡 MercadoLibre', cls:'meli',
+      margen: margenPct > 0 ? `${(margenPct-4).toFixed(0)}%` : '—',
+      fee: '~13–18%',
+      razon: precio < 30 ? 'Menor fee + mercado local. Ideal para validar rápido con inversión chica.' : 'Buena opción para el mercado hispanohablante con menos competencia que Amazon.',
+    },
+    shopify: {
+      name:'🟩 Shopify DTC', cls:'shopify',
+      margen: margenPct > 0 ? `${(margenPct+6).toFixed(0)}%` : '—',
+      fee: '~5–8% + ads',
+      razon: segActual === 'tendencia' ? 'IDEAL para tendencia viral — TikTok Ads + landing propia maximiza la velocidad.' : 'Mayor margen pero requiere budget de ads. Solo viable si tenés audiencia o budget inicial.',
+    },
+  };
+
+  const winner = segActual==='tendencia' ? 'shopify' : precio>30&&margenPct>35 ? 'amazon' : precio<15 ? 'meli' : margenPct > 30 ? 'amazon' : 'meli';
+  document.getElementById('canalWinnerLabel').textContent = ({amazon:'Amazon FBA ★',meli:'MercadoLibre ★',shopify:'Shopify DTC ★'}[winner]);
+  document.getElementById('canalWinnerLabel').className = 'canal-rec-winner ' + winner;
+  document.getElementById('canalRows').innerHTML = Object.entries(canales).map(([k,c])=>`
+    <div class="canal-row ${k===winner?'winner':''}">
+      <div class="canal-row-name ${c.cls}">${c.name}</div>
+      <div class="canal-row-metric"><span class="canal-row-label">Margen est.</span><span class="canal-row-val">${c.margen}</span></div>
+      <div class="canal-row-metric"><span class="canal-row-label">Fee canal</span><span class="canal-row-val">${c.fee}</span></div>
+      <div class="canal-row-reason">${c.razon}</div>
+    </div>`).join('');
+
+  buildActionPlan(winner);
+}
+
+// ═══════════════════════════════════════════════
+// STEP 4: PLAN DE ACCIÓN
+// ═══════════════════════════════════════════════
+function buildActionPlan(winner) {
+  const p = selectedProduct||{};
+  const pName = p.nombre||'Producto seleccionado';
+  const fecha = activeFecha ? FECHAS.find(f=>f.id===activeFecha) : null;
+
+  const checklists = {
+    sourcing: [
+      'Contactar 5 proveedores en Alibaba con RFQ template',
+      'Pedir muestras a los 2 mejores candidatos',
+      'Negociar precio, MOQ y condiciones de pago',
+      'Confirmar tiempo de producción + fecha de despacho',
+      fecha ? `Verificar que llegue antes del ${fmtDate(new Date(fecha.date+'T12:00:00'))}` : 'Confirmar plazo de entrega total (producción + barco + aduana)',
+      'Pagar 30% adelanto, 70% contra BL firmado',
+    ],
+    listing_amazon: [
+      'Registrar cuenta Amazon Seller Professional',
+      'Redactar título con keyword principal al inicio (< 200 chars)',
+      'Escribir 5 bullet points con beneficio > feature',
+      'Generar 250 bytes de backend keywords sin repetir listing',
+      'Preparar 7 imágenes: fondo blanco + lifestyle + infografía',
+      'Fijar precio competitivo (revisar Buy Box de competidores)',
+      'Activar campaña automática PPC con $15/día',
+    ],
+    listing_meli: [
+      'Crear cuenta MercadoLibre vendedor verificado',
+      'Activar Mercado Pago y cuenta bancaria asociada',
+      'Subir listing con Envío Gratis activado (si el margen lo permite)',
+      'Categoría correcta — revisar árbol de categorías MeLi',
+      'Precio competitivo — analizar los 10 primeros resultados',
+      'Mínimo 6 fotos de calidad (fondo blanco + uso real)',
+      'Activar Mercado Ads con presupuesto diario inicial',
+    ],
+    listing_shopify: [
+      'Crear tienda Shopify con dominio propio',
+      'Configurar Stripe o MercadoPago como gateway',
+      'Landing page de producto con video + beneficios + reviews',
+      'Configurar Meta Pixel + TikTok Pixel desde el día 1',
+      'Crear campaña TikTok Ads con video de producto en uso',
+      'Email capture con descuento de bienvenida (popup)',
+      'Setup de email flow: bienvenida + abandono de carrito',
+    ],
+    ppc: [
+      'Semana 1–2: Campaña automática para recolectar search terms',
+      'Semana 3: Crear campaña manual exacta con keywords ganadoras',
+      'Negar términos con clicks sin conversión (> 8 clicks, 0 ventas)',
+      'Revisar y optimizar cada lunes (ACoS objetivo < 30%)',
+      'Añadir campaña de competidores (aparecer en sus listings)',
+      'Escalar budget 20% por semana si ACoS está en objetivo',
+    ],
+  };
+
+  const listingKey = 'listing_' + winner;
+  const listingTitle = {listing_amazon:'Amazon — Listing',listing_meli:'MercadoLibre — Listing',listing_shopify:'Shopify — Setup'}[listingKey];
+  const listingColor = {listing_amazon:'amazon',listing_meli:'meli',listing_shopify:'shopify'}[listingKey];
+
+  const makeList = (items) => `<ul class="checklist">${items.map((item,i)=>`<li onclick="toggleCheck(this)"><div class="check-box">✓</div><span>${item}</span></li>`).join('')}</ul>`;
+
+  const tlColors = ['var(--estacional)','var(--accent)','var(--amber)','var(--accent2)','var(--tendencia)'];
+  const tlSteps = [
+    { week:'Sem 1', title:'Sourcing', items:'Contactar proveedores · Pedir muestras · Negociar precio', color:tlColors[0] },
+    { week:'Sem 2–3', title:'Producción', items:'Aprobar muestra · Pagar adelanto · Confirmar producción', color:tlColors[1] },
+    { week:'Sem 4–8', title:'Tránsito', items:'Barco en camino · Preparar listing · Crear cuenta', color:tlColors[2] },
+    { week:'Sem 9–10', title:'Aduana + prep', items:'Recibir mercadería · Ingresar a FBA/depósito · Go live', color:tlColors[3] },
+    { week:'Sem 11+', title:'Escalar', items:'PPC activo · Optimizar · Reordenar inventario', color:tlColors[4] },
+  ];
+
+  document.getElementById('actionGrid').innerHTML = `
+    <div class="action-block">
+      <h3 class="sourcing">◈ Sourcing — Alibaba & 1688</h3>
+      ${makeList(checklists.sourcing)}
+    </div>
+    <div class="action-block">
+      <h3 class="${listingColor}">${listingTitle}</h3>
+      ${makeList(checklists[listingKey]||checklists.listing_amazon)}
+    </div>
+    <div class="action-block">
+      <h3 class="ppc">◈ PPC & Tráfico pago</h3>
+      ${makeList(checklists.ppc)}
+    </div>
+    <div class="action-block">
+      <h3 class="timing">◈ Resumen de números</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        ${[
+          ['Producto', pName],
+          ['Canal recomendado', {amazon:'Amazon FBA',meli:'MercadoLibre',shopify:'Shopify DTC'}[winner]||winner],
+          ['Costo total/u', calcData.costoTotal?`$${calcData.costoTotal.toFixed(2)}`:'—'],
+          ['Ganancia/u', calcData.gananciaU?`$${calcData.gananciaU.toFixed(2)}`:'—'],
+          ['Margen neto', calcData.margenPct?`${calcData.margenPct.toFixed(1)}%`:'—'],
+          ['Break-even', calcData.breakEvenDays?`${calcData.breakEvenDays} días`:'—'],
+          fecha?['Fecha objetivo', `${fecha.emoji} ${fecha.name} — ${fmtDateFull(new Date(fecha.date+'T12:00:00'))}`]:['Fecha objetivo','Sin fecha específica'],
+        ].map(([l,v])=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.08em;text-transform:uppercase">${l}</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600">${v}</span></div>`).join('')}
+      </div>
+    </div>
+    <div class="action-block action-full">
+      <h3 class="timing">◈ Timeline de lanzamiento</h3>
+      <div class="timeline-steps">
+        ${tlSteps.map(s=>`<div class="tl-step"><div class="tl-step-week">${s.week}</div><div class="tl-step-title">${s.title}</div><div class="tl-step-items">${s.items}</div><div class="tl-step-bar" style="--tc:${s.color}"></div></div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function toggleCheck(li) {
+  li.classList.toggle('done-item');
+  li.querySelector('.check-box').classList.toggle('checked');
+}
+
+function exportPlan() {
+  const p = selectedProduct||{};
+  const fecha = activeFecha ? FECHAS.find(f=>f.id===activeFecha) : null;
+  const lines = [
+    'FBA SCOUT — PLAN DE LANZAMIENTO',
+    '================================',
+    `Producto: ${p.nombre||'—'}`,
+    `Nicho: ${p.nicho||'—'}`,
+    `Canal: ${calcData.margenPct>35?'Amazon FBA':calcData.margenPct>20?'MercadoLibre':'Shopify'}`,
+    fecha?`Fecha objetivo: ${fecha.name} (${fecha.date})`:'Sin fecha específica',
+    '',
+    'NÚMEROS',
+    `Costo total/u: $${calcData.costoTotal?.toFixed(2)||'—'}`,
+    `Precio venta: $${calcData.precio?.toFixed(2)||'—'}`,
+    `Ganancia/u: $${calcData.gananciaU?.toFixed(2)||'—'}`,
+    `Margen neto: ${calcData.margenPct?.toFixed(1)||'—'}%`,
+    `Inversión total: $${calcData.inversion?.toFixed(0)||'—'}`,
+    `Break-even: ${calcData.breakEvenDays||'—'} días`,
+    `ROI mensual: ${calcData.roiMensual?.toFixed(0)||'—'}%`,
+    '',
+    `Generado: ${new Date().toLocaleDateString('es-AR')}`,
+  ];
+  const blob = new Blob([lines.join('\n')], {type:'text/plain'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='plan-lanzamiento.txt'; a.click();
+}
+
+function restart() {
+  selectedProduct=null; activeFecha=null; calcData={};
+  document.getElementById('categoryInput').value='';
+  document.getElementById('resultsArea').innerHTML='<div class="empty-state"><div class="icon">◎</div><p>Ingresá una categoría para comenzar el research</p></div>';
+  closeSP();
+  goStep(1);
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+renderFechas();
+</script>
+</body>
+</html>
