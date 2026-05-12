@@ -207,7 +207,12 @@ export default function Dashboard() {
           <div className="nav-logo">Product<span>Lab</span></div>
           <div className="nav-right">
             <span className="nav-user">{profile?.nombre || user?.email}</span>
-            <Link href="/"><button className="btn-sm btn-scout">🔍 Scout</button></Link>
+            <Link href="/"><button className="btn-sm btn-scout" onClick={async()=>{
+              const { data: { session } } = await supabase.auth.getSession();
+              if(session?.access_token) {
+                sessionStorage.setItem('pl_token', session.access_token);
+              }
+            }}>🔍 Scout</button></Link>
             <button className="btn-sm" onClick={handleLogout}>Salir</button>
           </div>
         </nav>

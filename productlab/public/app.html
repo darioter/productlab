@@ -1333,14 +1333,22 @@ let authToken = null;
 
 async function initAuth() {
   try {
-    const keys = Object.keys(localStorage).filter(k => k.includes('supabase') && k.includes('auth'));
-    for (const key of keys) {
-      try {
-        const val = JSON.parse(localStorage.getItem(key));
-        if (val?.access_token) { authToken = val.access_token; break; }
-        if (val?.session?.access_token) { authToken = val.session.access_token; break; }
-      } catch(e) {}
+    // Check sessionStorage first (passed from Dashboard)
+    const ssToken = sessionStorage.getItem('pl_token');
+    if (ssToken) authToken = ssToken;
+
+    // Then check localStorage (Supabase native)
+    if (!authToken) {
+      const keys = Object.keys(localStorage).filter(k => k.includes('supabase') && k.includes('auth'));
+      for (const key of keys) {
+        try {
+          const val = JSON.parse(localStorage.getItem(key));
+          if (val?.access_token) { authToken = val.access_token; break; }
+          if (val?.session?.access_token) { authToken = val.session.access_token; break; }
+        } catch(e) {}
+      }
     }
+
     if (authToken) {
       const resp = await fetch('/api/get-session', { headers: { 'Authorization': 'Bearer ' + authToken } });
       const data = await resp.json();

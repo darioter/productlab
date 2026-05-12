@@ -12,6 +12,17 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setError('');
+    const checkResp = await fetch('/api/check-access', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    const checkData = await checkResp.json();
+    if (!checkData.allowed) {
+      setError('Tu email no tiene acceso a ProductLab. Solicitá una invitación al administrador.');
+      setLoading(false);
+      return;
+    }
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: `${window.location.origin}/dashboard` }
@@ -45,7 +56,7 @@ export default function Login() {
         h1{font-size:24px;font-weight:800;margin-bottom:6px;}
         .sub{font-size:13px;color:#5A7A8A;margin-bottom:32px;font-family:'JetBrains Mono',monospace;}
         .btn-google{width:100%;padding:12px;background:#131B24;border:1px solid rgba(255,255,255,0.1);color:#E8F0F8;font-family:'Syne',sans-serif;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:all 0.2s;margin-bottom:20px;}
-        .btn-google:hover{border-color:rgba(255,255,255,0.2);background:#1A2535;}
+        .btn-google:hover{border-color:rgba(255,255,255,0.2);}
         .divider{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
         .divider::before,.divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.07);}
         .divider span{font-family:'JetBrains Mono',monospace;font-size:10px;color:#5A7A8A;letter-spacing:0.1em;text-transform:uppercase;}
@@ -57,34 +68,31 @@ export default function Login() {
         .btn-primary:hover{filter:brightness(1.1);}
         .btn-primary:disabled{opacity:0.5;cursor:not-allowed;}
         .success{background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.3);padding:14px;font-size:13px;color:#00E5A0;margin-top:16px;line-height:1.6;}
-        .error{background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.3);padding:12px;font-size:12px;color:#FF4757;margin-top:12px;font-family:'JetBrains Mono',monospace;}
+        .error{background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.3);padding:12px;font-size:12px;color:#FF4757;margin-top:12px;font-family:'JetBrains Mono',monospace;line-height:1.5;}
+        .restricted{background:rgba(255,184,0,0.04);border:1px solid rgba(255,184,0,0.15);padding:12px;font-size:11px;color:#5A7A8A;margin-top:20px;font-family:'JetBrains Mono',monospace;text-align:center;letter-spacing:0.05em;}
       `}</style>
       <div className="card">
         <div className="logo">Product<span>Lab</span></div>
-        <h1>Bienvenido</h1>
-        <div className="sub">// sistema de e-commerce inteligente</div>
-
+        <h1>Acceso restringido</h1>
+        <div className="sub">// plataforma de e-commerce inteligente</div>
         <button className="btn-google" onClick={handleGoogle}>
           <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 002.38-5.88c0-.57-.05-.66-.15-1.18z"/><path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2a4.8 4.8 0 01-7.18-2.54H1.83v2.07A8 8 0 008.98 17z"/><path fill="#FBBC05" d="M4.5 10.52a4.8 4.8 0 010-3.04V5.41H1.83a8 8 0 000 7.18l2.67-2.07z"/><path fill="#EA4335" d="M8.98 4.18c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 001.83 5.4L4.5 7.49a4.77 4.77 0 014.48-3.31z"/></svg>
           Continuar con Google
         </button>
-
         <div className="divider"><span>o con email</span></div>
-
         {!sent ? (
           <form onSubmit={handleMagicLink}>
             <label>Email</label>
             <input type="email" placeholder="tu@email.com" value={email} onChange={e => setEmail(e.target.value)} required />
             <button className="btn-primary" disabled={loading}>
-              {loading ? 'Enviando...' : 'Enviar magic link →'}
+              {loading ? 'Verificando...' : 'Enviar magic link →'}
             </button>
             {error && <div className="error">{error}</div>}
           </form>
         ) : (
-          <div className="success">
-            ✅ Revisá tu email — te enviamos un link para ingresar. Podés cerrar esta pestaña.
-          </div>
+          <div className="success">✅ Revisá tu email — te enviamos un link para ingresar.</div>
         )}
+        <div className="restricted">🔒 Acceso por invitación únicamente</div>
       </div>
     </>
   );
