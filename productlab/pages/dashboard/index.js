@@ -24,6 +24,14 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('productos');
   const [showNewProduct, setShowNewProduct] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [meliConnected, setMeliConnected] = useState(false);
+  const [meliNickname, setMeliNickname] = useState('');
+  const [showPublish, setShowPublish] = useState(false);
+  const [publishProduct, setPublishProduct] = useState(null);
+  const [publishData, setPublishData] = useState({ nombre:'', descripcion:'', precio:'', categoria_id:'', categoria_nombre:'', stock:'1', envio_gratis:true, condicion:'new' });
+  const [publishing, setPublishing] = useState(false);
+  const [publishResult, setPublishResult] = useState(null);
+  const [categorySuggestions, setCategorySuggestions] = useState([]);
   const [newProduct, setNewProduct] = useState({
     nombre: '', proveedor: '', costo_real: '', costo_envio: '',
     costo_aduana: '', costo_packaging: '', unidades: '',
@@ -37,6 +45,13 @@ export default function Dashboard() {
       setUser(session.user);
       loadData(session.user.id);
     });
+    // Check MeLi connection from URL params
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('meli') === 'connected') {
+      setMeliConnected(true);
+      setMeliNickname(params.get('nickname') || '');
+      window.history.replaceState({}, '', '/dashboard');
+    }
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === 'SIGNED_OUT') router.push('/auth/login');
     });
@@ -99,6 +114,58 @@ export default function Dashboard() {
     router.push('/auth/login');
   }
 
+  function openPublish(product) {
+    setPublishProduct(product);
+    setPublishResult(null);
+    setPublishData({
+      nombre: product.nombre,
+      descripcion: `${product.nombre}. Producto nuevo en perfectas condiciones.`,
+      precio: product.precio_venta ? Math.round(product.precio_venta * 1050) : '', // USD → ARS estimado
+      categoria_id: '',
+      categoria_nombre: '',
+      stock: product.unidades || '1',
+      envio_gratis: true,
+      condicion: 'new',
+    });
+    setCategorySuggestions([]);
+    setShowPublish(true);
+  }
+
+  async function searchCategories(query) {
+    if (query.length < 3) return;
+    try {
+      const resp = await fetch(`/api/meli-categories?q=${encodeURIComponent(query)}`);
+      const data = await resp.json();
+      setCategorySuggestions(Array.isArray(data) ? data.slice(0, 6) : []);
+    } catch(e) {}
+  }
+
+  async function handlePublish(e) {
+    e.preventDefault();
+    if (!publishData.categoria_id) { alert('Seleccioná una categoría'); return; }
+    setPublishing(true);
+    setPublishResult(null);
+    try {
+      const resp = await fetch('/api/meli-publish', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(publishData),
+      });
+      const data = await resp.json();
+      if (data.success) {
+        setPublishResult({ success: true, ...data });
+        // Update product estado to live
+        await supabase.from('products').update({ estado: 'live', fecha_live: new Date().toISOString().split('T')[0] }).eq('id', publishProduct.id);
+        loadData(user.id);
+      } else {
+        setPublishResult({ success: false, error: data.error });
+      }
+    } catch(err) {
+      setPublishResult({ success: false, error: err.message });
+    }
+    setPublishing(false);
+  }
+
   // STATS
   const totalInvertido = products.reduce((a, p) => a + (p.inversion_total || 0), 0);
   const productosLive = products.filter(p => p.estado === 'live').length;
@@ -131,6 +198,16 @@ export default function Dashboard() {
         .btn-sm:hover{border-color:rgba(255,255,255,0.2);color:#E8F0F8;}
         .btn-scout{background:#00E5A0;color:#000;border:none;}
         .btn-scout:hover{filter:brightness(1.1);}
+        .btn-meli{background:rgba(255,230,0,0.1);color:#FFE600;border:1px solid rgba(255,230,0,0.3);}
+        .btn-meli:hover{background:rgba(255,230,0,0.15);}
+        .btn-meli.connected{background:rgba(255,230,0,0.08);color:#FFE600;}
+        .btn-publish{background:rgba(255,230,0,0.1);color:#FFE600;border:1px solid rgba(255,230,0,0.3);font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 12px;cursor:pointer;transition:all 0.15s;text-transform:uppercase;letter-spacing:0.06em;}
+        .btn-publish:hover{background:rgba(255,230,0,0.2);}
+        .publish-result-ok{background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.3);padding:16px;margin-top:14px;}
+        .publish-result-err{background:rgba(255,71,87,0.08);border:1px solid rgba(255,71,87,0.3);padding:16px;margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#FF4757;}
+        .cat-suggestion{padding:8px 12px;cursor:pointer;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.05);transition:background 0.1s;}
+        .cat-suggestion:hover{background:rgba(0,229,160,0.06);}
+        .cat-list{background:#080C10;border:1px solid rgba(255,255,255,0.1);margin-top:-13px;margin-bottom:14px;}
         /* HERO */
         .dash-hero{padding:28px 0 20px;}
         .dash-hero h1{font-size:clamp(20px,3vw,30px);font-weight:800;margin-bottom:4px;}
@@ -206,6 +283,11 @@ export default function Dashboard() {
         <nav>
           <div className="nav-logo">Product<span>Lab</span></div>
           <div className="nav-right">
+            {meliConnected ? (
+              <span className="btn-sm btn-meli connected">🟡 MeLi: {meliNickname}</span>
+            ) : (
+              <a href="/api/meli-connect" className="btn-sm btn-meli">Conectar MeLi</a>
+            )}
             <span className="nav-user">{profile?.nombre || user?.email}</span>
             <Link href="/"><button className="btn-sm btn-scout" onClick={async()=>{
               const { data: { session } } = await supabase.auth.getSession();
@@ -294,6 +376,9 @@ export default function Dashboard() {
                           ))}
                         </select>
                         <button className="btn-delete" onClick={()=>deleteProduct(p.id)}>Eliminar</button>
+                        {p.estado !== 'live' && (
+                          <button className="btn-publish" onClick={()=>openPublish(p)}>🟡 Publicar en MeLi</button>
+                        )}
                       </div>
                     </div>
                   );
@@ -417,6 +502,120 @@ export default function Dashboard() {
                   {saving ? 'Guardando...' : 'Guardar producto →'}
                 </button>
               </form>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL PUBLICAR EN MELI */}
+      {showPublish && (
+        <div className="modal-bg" onClick={e=>{if(e.target===e.currentTarget){setShowPublish(false);setPublishResult(null);}}}>
+          <div className="modal">
+            <div className="modal-header">
+              <h2>🟡 Publicar en MercadoLibre</h2>
+              <span className="modal-close" onClick={()=>{setShowPublish(false);setPublishResult(null);}}>✕ cerrar</span>
+            </div>
+            <div className="modal-body">
+              {!meliConnected ? (
+                <div style={{textAlign:'center',padding:'20px 0'}}>
+                  <div style={{fontSize:'14px',marginBottom:'16px',color:'var(--muted)'}}>
+                    Primero conectá tu cuenta de MercadoLibre
+                  </div>
+                  <a href="/api/meli-connect" style={{background:'#FFE600',color:'#000',padding:'12px 24px',fontWeight:'700',fontSize:'13px',textDecoration:'none',display:'inline-block'}}>
+                    Conectar MercadoLibre →
+                  </a>
+                </div>
+              ) : !publishResult ? (
+                <form onSubmit={handlePublish}>
+                  <div className="form-section">Datos de la publicación</div>
+                  <div className="form-grid">
+                    <div className="form-field full">
+                      <label>Título del listing *</label>
+                      <input type="text" value={publishData.nombre} onChange={e=>setPublishData({...publishData,nombre:e.target.value})} required maxLength={60} />
+                      <div style={{fontSize:'10px',color:'var(--muted)',fontFamily:'JetBrains Mono',marginTop:'3px'}}>{publishData.nombre.length}/60 caracteres</div>
+                    </div>
+                    <div className="form-field full">
+                      <label>Categoría MeLi *</label>
+                      <input
+                        type="text"
+                        placeholder="Escribí para buscar categoría..."
+                        value={publishData.categoria_nombre}
+                        onChange={e=>{
+                          setPublishData({...publishData,categoria_nombre:e.target.value,categoria_id:''});
+                          searchCategories(e.target.value);
+                        }}
+                      />
+                      {categorySuggestions.length > 0 && !publishData.categoria_id && (
+                        <div className="cat-list">
+                          {categorySuggestions.map(c=>(
+                            <div key={c.category_id} className="cat-suggestion" onClick={()=>{
+                              setPublishData({...publishData,categoria_id:c.category_id,categoria_nombre:c.category_name});
+                              setCategorySuggestions([]);
+                            }}>
+                              <span style={{color:'#00E5A0',fontFamily:'JetBrains Mono',fontSize:'10px'}}>{c.category_id}</span> — {c.category_name}
+                              {c.domain_name && <span style={{color:'var(--muted)',fontSize:'11px'}}> · {c.domain_name}</span>}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                      {publishData.categoria_id && (
+                        <div style={{fontSize:'11px',color:'#00E5A0',fontFamily:'JetBrains Mono',marginTop:'4px'}}>✓ {publishData.categoria_id}</div>
+                      )}
+                    </div>
+                    <div className="form-field">
+                      <label>Precio ARS *</label>
+                      <input type="number" value={publishData.precio} onChange={e=>setPublishData({...publishData,precio:e.target.value})} required />
+                    </div>
+                    <div className="form-field">
+                      <label>Stock disponible</label>
+                      <input type="number" value={publishData.stock} onChange={e=>setPublishData({...publishData,stock:e.target.value})} min="1" />
+                    </div>
+                    <div className="form-field full">
+                      <label>Descripción</label>
+                      <textarea value={publishData.descripcion} onChange={e=>setPublishData({...publishData,descripcion:e.target.value})} rows={4} />
+                    </div>
+                    <div className="form-field">
+                      <label>Condición</label>
+                      <select value={publishData.condicion} onChange={e=>setPublishData({...publishData,condicion:e.target.value})}>
+                        <option value="new">Nuevo</option>
+                        <option value="used">Usado</option>
+                      </select>
+                    </div>
+                    <div className="form-field">
+                      <label>Envío gratis</label>
+                      <select value={publishData.envio_gratis} onChange={e=>setPublishData({...publishData,envio_gratis:e.target.value==='true'})}>
+                        <option value="true">✓ Sí — activo</option>
+                        <option value="false">No</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button className="btn-save" disabled={publishing} style={{background:'#FFE600',color:'#000'}}>
+                    {publishing ? 'Publicando...' : '🟡 Publicar en MercadoLibre →'}
+                  </button>
+                </form>
+              ) : publishResult.success ? (
+                <div className="publish-result-ok">
+                  <div style={{fontSize:'16px',fontWeight:'700',color:'#00E5A0',marginBottom:'12px'}}>✅ Publicado exitosamente</div>
+                  <div style={{fontSize:'13px',color:'var(--muted)',marginBottom:'8px'}}>ID: <span style={{fontFamily:'JetBrains Mono',color:'var(--text)'}}>{publishResult.item_id}</span></div>
+                  <div style={{fontSize:'13px',color:'var(--muted)',marginBottom:'16px'}}>Precio: <span style={{color:'#FFE600',fontFamily:'JetBrains Mono'}}>${publishResult.price?.toLocaleString('es-AR')}</span></div>
+                  <a href={publishResult.permalink} target="_blank" rel="noreferrer"
+                    style={{display:'inline-block',background:'#FFE600',color:'#000',padding:'10px 20px',fontWeight:'700',fontSize:'13px',textDecoration:'none',marginRight:'10px'}}>
+                    Ver publicación →
+                  </a>
+                  <button onClick={()=>{setShowPublish(false);setPublishResult(null);}} style={{background:'none',border:'1px solid var(--border)',color:'var(--muted)',padding:'10px 16px',cursor:'pointer',fontFamily:'JetBrains Mono',fontSize:'11px'}}>
+                    Cerrar
+                  </button>
+                </div>
+              ) : (
+                <div className="publish-result-err">
+                  ✗ Error: {publishResult.error}
+                  <div style={{marginTop:'10px'}}>
+                    <button onClick={()=>setPublishResult(null)} style={{background:'none',border:'1px solid rgba(255,71,87,0.4)',color:'#FF4757',padding:'6px 14px',cursor:'pointer',fontFamily:'JetBrains Mono',fontSize:'11px'}}>
+                      Intentar de nuevo
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
