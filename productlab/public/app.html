@@ -525,9 +525,8 @@ select option{background:var(--surface);}
   </div>
 
   <!-- HINT: aparece cuando no hay fecha seleccionada -->
-  <div id="segTabsHint" style="display:none;align-items:center;gap:8px;padding:10px 14px;background:var(--surface);border:1px solid rgba(0,102,255,0.2);margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);letter-spacing:0.06em">
-    <span style="font-size:14px">☝</span>
-    Hacé clic en Tendencia, Estacional o Cotidiano para ver sugerencias de rubros con IA
+  <div id="segTabsHint" style="display:none;padding:10px 14px;background:var(--surface);border:1px solid rgba(0,102,255,0.2);margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);letter-spacing:0.06em">
+    ☝ Hacé clic en Tendencia, Estacional o Cotidiano para ver sugerencias de rubros con IA
   </div>
 
   <div class="nicho-banner" id="nichoBanner">
@@ -1101,13 +1100,12 @@ function selectNicho(el, rubro) {
 }
 
 function clearNichos() {
-  // Sin fecha: ocultamos el banner y mostramos hint en los tabs
-  document.getElementById('nichoBanner').classList.remove('visible');
-  document.getElementById('nichoChips').innerHTML = '';
-
-  // Mostrar hint debajo de los tabs
+  const banner = document.getElementById('nichoBanner');
+  const chips = document.getElementById('nichoChips');
   const hint = document.getElementById('segTabsHint');
-  if(hint) hint.style.display = 'flex';
+  if(banner) banner.classList.remove('visible');
+  if(chips) chips.innerHTML = '';
+  if(hint) hint.style.display = 'block';
 }
 
 function hideSegHint() {
@@ -1207,8 +1205,8 @@ function goStep(n) {
     else if (i+1 < n) b.classList.add('done');
   });
   // When entering step 2, render nichos if a fecha is active
-  if(n === 2 && activeFecha) renderNichos(activeFecha);
-  else if(n === 2 && !activeFecha) clearNichos();
+  if(n === 2 && activeFecha) setTimeout(()=>renderNichos(activeFecha), 50);
+  else if(n === 2 && !activeFecha) setTimeout(()=>clearNichos(), 50);
   if(n === 3) { initShippingMode(); updateArancel(); }
   window.scrollTo({top:0,behavior:'smooth'});
 }
