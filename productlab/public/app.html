@@ -919,7 +919,7 @@ function buildPrompt(category, seg, market, mktSub, withAli, withS16, fechaHint)
   else mktMetrics='"costo_estimado_usd":"$X–XX","amazon":{"precio":"$XX","margen":"XX%","demanda":"X.XXX/mes","competencia":"Media"},"meli":{"precio_usd":"$XX","margen":"XX%","demanda":"XXX/mes","competencia":"Baja"},"shopify":{"precio":"$XX","margen":"XX%","canal":"TikTok|Meta"}';
   return `Experto en e-commerce 10 años. Analizá "${category}" para ${market==='multi'?'Amazon US + MeLi AR + Shopify':market+' '+mktSub}. Segmento: ${segDefs[seg]}. Devolvé SOLO JSON sin texto ni backticks:
 {"productos":[{"nombre":"Nombre MUY específico","nicho":"sub-nicho concreto","descripcion":"2 oraciones concretas de oportunidad","score_oportunidad":82,"segmento":"${seg}",${segExtra}${mktMetrics},"pros":["pro1","pro2","pro3"],"contras":["contra1","contra2"],"keywords_principales":["kw1","kw2","kw3","kw4","kw5"],"tags":["TAG1","TAG2"],"alerta":null,${aliBlock},${s16Block}}]}
-4 productos. Tags: TENDENCIA 2025-26, VIRAL TIKTOK, VENTANA CORTA, EVERGREEN, NICHO DEFENSIBLE, ALTO MARGEN, BAJA COMPETENCIA, ESCALABLE, MULTI-CANAL, GIFT-FRIENDLY, BAJO COSTO ENTRADA, SHOPIFY NATIVO, RIESGO MODERADO, SATURADO.`;
+3 productos. Tags: TENDENCIA 2025-26, VIRAL TIKTOK, VENTANA CORTA, EVERGREEN, NICHO DEFENSIBLE, ALTO MARGEN, BAJA COMPETENCIA, ESCALABLE, MULTI-CANAL, GIFT-FRIENDLY, BAJO COSTO ENTRADA, SHOPIFY NATIVO, RIESGO MODERADO, SATURADO.`;
 }
 
 async function runResearch() {
@@ -937,7 +937,7 @@ async function runResearch() {
     setTimeout(()=>{el.classList.add('done');el.classList.remove('visible');},i*900+700);
   });
   try {
-    const resp = await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:buildPrompt(category,seg,market,mktSub,srcAli,srcS16,fechaHint)}]})});
+    const resp = await fetch('/api/claude',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4000,messages:[{role:'user',content:buildPrompt(category,seg,market,mktSub,srcAli,srcS16,fechaHint)}]})});
     const data = await resp.json();
     if(!resp.ok||data.error) throw new Error(data.error?.message||'Error API');
     const raw = data.content.map(b=>b.text||'').join('');
