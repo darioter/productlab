@@ -607,25 +607,86 @@ select option{background:var(--surface);}
     </div>
     <button class="cpb-change" onclick="goStep(2)">← Cambiar producto</button>
   </div>
+
+  <!-- SHIPPING MODE SELECTOR -->
+  <div id="shippingModeBlock" style="background:var(--surface);border:1px solid var(--border);padding:16px 18px;margin-bottom:16px;display:none">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Modo de envío — según fecha seleccionada</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap" id="shippingModeCards"></div>
+  </div>
+
+  <!-- ARANCEL SELECTOR -->
+  <div style="background:var(--surface);border:1px solid var(--border);padding:16px 18px;margin-bottom:16px;">
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px">Categoría arancelaria (Argentina)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end">
+      <div class="calc-field" style="margin:0">
+        <label>Categoría del producto</label>
+        <select id="cCategArancel" onchange="updateArancel()">
+          <option value="20_21">Utensilios cocina / Hogar — 20% + IVA 21%</option>
+          <option value="35_21">Electrónica / Tecnología — 35% + IVA 21%</option>
+          <option value="35_21b">Indumentaria / Textiles — 35% + IVA 21%</option>
+          <option value="20_21c">Juguetes / Deportes — 20% + IVA 21%</option>
+          <option value="12_21">Libros / Material educativo — 12% + IVA 21%</option>
+          <option value="0_21">Alimentos / Bebidas — 0% + IVA 10.5%</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </div>
+      <div style="display:flex;gap:8px">
+        <div class="calc-field" style="margin:0;flex:1">
+          <label>Arancel (%)</label>
+          <input type="number" id="cArancel" value="20" step="1" oninput="calcular()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:13px;padding:10px 12px;outline:none;width:100%">
+        </div>
+        <div class="calc-field" style="margin:0;flex:1">
+          <label>IVA (%)</label>
+          <input type="number" id="cIVA" value="21" step="1" oninput="calcular()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);font-family:'Syne',sans-serif;font-size:13px;padding:10px 12px;outline:none;width:100%">
+        </div>
+      </div>
+    </div>
+    <div id="arancelNote" style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-top:8px;line-height:1.5"></div>
+  </div>
+
   <div class="calc-grid">
     <div class="calc-section">
-      <h3>Costos del producto</h3>
+      <h3>Costos de origen</h3>
       <div class="calc-field">
         <label>Costo proveedor (USD/unidad)</label>
         <input type="number" id="cCosto" placeholder="ej: 7.50" step="0.01" oninput="calcular()">
       </div>
       <div class="calc-field">
-        <label>Envío marítimo (USD/unidad est.)</label>
+        <label>Peso estimado (kg/unidad)</label>
+        <input type="number" id="cPeso" placeholder="ej: 0.45" step="0.01" oninput="autoCalcFreight()">
+        <div class="calc-field-note">Se usa para estimar el flete automáticamente</div>
+      </div>
+      <div class="calc-field">
+        <label>Flete (USD/unidad) <span id="fleteLabel" style="color:var(--estacional);font-size:10px"></span></label>
         <input type="number" id="cEnvio" placeholder="ej: 1.20" step="0.01" oninput="calcular()">
-        <div class="calc-field-note">Barco China→AR/EEUU ≈ $0.80–2.00/u según peso</div>
+        <div class="calc-field-note" id="fleteNote">Barco ≈ $0.80–2.00/u · Aéreo ≈ $4.00–8.00/u</div>
       </div>
       <div class="calc-field">
-        <label>Aduanas + prep center (USD/u)</label>
-        <input type="number" id="cAduana" placeholder="ej: 0.80" step="0.01" oninput="calcular()">
+        <label>Seguro de carga (USD/u)</label>
+        <input type="number" id="cSeguro" placeholder="ej: 0.15" step="0.01" oninput="calcular()">
+        <div class="calc-field-note">≈ 1.5% del valor FOB</div>
+      </div>
+    </div>
+    <div class="calc-section">
+      <h3>Costos de destino</h3>
+      <div class="calc-field">
+        <label>Aduana AR — calculada automáticamente</label>
+        <input type="number" id="cAduana" placeholder="auto" step="0.01" oninput="calcular()" style="color:var(--amber)">
+        <div class="calc-field-note" id="aduanaNote">Se calcula con arancel + IVA sobre valor CIF</div>
       </div>
       <div class="calc-field">
-        <label>Packaging / etiquetado (USD/u)</label>
+        <label>Gasto bancario / comisión (USD/u)</label>
+        <input type="number" id="cBanco" placeholder="ej: 0.30" step="0.01" oninput="calcular()">
+        <div class="calc-field-note">Wire transfer ≈ $15–30 fijo por transferencia</div>
+      </div>
+      <div class="calc-field">
+        <label>Prep center / etiquetado (USD/u)</label>
         <input type="number" id="cPack" placeholder="ej: 0.40" step="0.01" oninput="calcular()">
+      </div>
+      <div id="costoAterrizajeBox" style="margin-top:12px;padding:10px 12px;border:1px solid rgba(0,229,160,0.2);background:rgba(0,229,160,0.04)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Costo de aterrizaje total</div>
+        <div id="costoAterrizajeVal" style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:500;color:var(--accent)">—</div>
+        <div id="costoAterrizajeSub" style="font-size:11px;color:var(--muted);margin-top:2px"></div>
       </div>
     </div>
     <div class="calc-section">
@@ -647,6 +708,12 @@ select option{background:var(--surface);}
         <label>Ventas estimadas/mes (unidades)</label>
         <input type="number" id="cVentas" placeholder="ej: 150" step="1" oninput="calcular()">
       </div>
+    </div>
+
+    <!-- COMPARATIVA BARCO VS AEREO -->
+    <div class="calc-section" id="freightCompareBox" style="display:none">
+      <h3 style="color:var(--estacional)">📊 Barco vs Aéreo — impacto en margen</h3>
+      <div id="freightCompareContent"></div>
     </div>
   </div>
   <div class="calc-results" id="calcResults">
@@ -952,6 +1019,7 @@ function goStep(n) {
   // When entering step 2, render nichos if a fecha is active
   if(n === 2 && activeFecha) renderNichos(activeFecha);
   else if(n === 2 && !activeFecha) clearNichos();
+  if(n === 3) { initShippingMode(); updateArancel(); }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -1152,21 +1220,204 @@ function selectProduct(p) {
 }
 
 // ═══════════════════════════════════════════════
-// STEP 3: CALCULADORA
+// ARANCEL & FLETE
 // ═══════════════════════════════════════════════
+const ARANCELES = {
+  '20_21':  { arancel:20, iva:21, nota:'Utensilios, hogar, herramientas — Posición 8205/8211' },
+  '35_21':  { arancel:35, iva:21, nota:'Electrónica, tecnología — Posición 8471/8517' },
+  '35_21b': { arancel:35, iva:21, nota:'Indumentaria, textiles — Posición 6101/6211' },
+  '20_21c': { arancel:20, iva:21, nota:'Juguetes, artículos deportivos — Posición 9503/9506' },
+  '12_21':  { arancel:12, iva:21, nota:'Material educativo — Posición 4901/4911' },
+  '0_21':   { arancel:0,  iva:10.5, nota:'Alimentos básicos — Posición 0901/2101' },
+  'custom': { arancel:20, iva:21, nota:'Personalizado — modificá los valores' },
+};
+
+function updateArancel() {
+  const key = document.getElementById('cCategArancel').value;
+  const a = ARANCELES[key];
+  if(!a) return;
+  document.getElementById('cArancel').value = a.arancel;
+  document.getElementById('cIVA').value = a.iva;
+  document.getElementById('arancelNote').textContent = a.nota;
+  calcular();
+}
+
+function autoCalcFreight() {
+  const peso = parseFloat(document.getElementById('cPeso').value)||0;
+  if(!peso) return;
+
+  // Determine shipping mode from fecha
+  const daysLeft = activeFecha ? getDaysUntil(FECHAS.find(f=>f.id===activeFecha)?.date||'2099-01-01') : 999;
+  const fecha = activeFecha ? FECHAS.find(f=>f.id===activeFecha) : null;
+  const daysNeeded = fecha ? (fecha.shipDays + fecha.prepDays) : 70;
+  const useAereo = daysLeft < daysNeeded && daysLeft > 0;
+
+  // Estimate freight cost
+  // Barco: ~$800–1200/CBM, typical 0.005 CBM/kg → ~$4–6/kg → $0.60–0.90/u at 0.5kg
+  // Aéreo: ~$5–8/kg
+  let flete = 0;
+  if(useAereo) {
+    flete = (peso * 6.5).toFixed(2); // Aéreo express
+    document.getElementById('fleteLabel').textContent = '✈ AÉREO';
+    document.getElementById('fleteNote').textContent = `Aéreo estimado: $6.50/kg × ${peso}kg = $${flete}/u`;
+  } else {
+    flete = (peso * 1.8).toFixed(2); // Marítimo
+    document.getElementById('fleteLabel').textContent = '🚢 BARCO';
+    document.getElementById('fleteNote').textContent = `Marítimo estimado: $1.80/kg × ${peso}kg = $${flete}/u`;
+  }
+  document.getElementById('cEnvio').value = flete;
+
+  // Show freight compare if fecha selected
+  if(activeFecha && fecha) updateFreightCompare(peso, fecha, daysLeft);
+  calcular();
+}
+
+function updateFreightCompare(peso, fecha, daysLeft) {
+  const costo = parseFloat(document.getElementById('cCosto').value)||0;
+  const precio = parseFloat(document.getElementById('cPrecio').value)||0;
+  const fee = parseFloat(document.getElementById('cFee').value)||0;
+  const pack = parseFloat(document.getElementById('cPack').value)||0;
+  const seguro = parseFloat(document.getElementById('cSeguro').value)||0;
+  const arancel = parseFloat(document.getElementById('cArancel').value)||0;
+  const iva = parseFloat(document.getElementById('cIVA').value)||0;
+
+  const fleteBarco = peso * 1.8;
+  const fleteAereo = peso * 6.5;
+
+  function calcCostoTotal(flete) {
+    const cif = costo + flete + seguro;
+    const aduanaAmt = cif * ((arancel + iva) / 100);
+    return costo + flete + seguro + aduanaAmt + pack;
+  }
+
+  const totalBarco = calcCostoTotal(fleteBarco);
+  const totalAereo = calcCostoTotal(fleteAereo);
+  const feeAmt = precio * (fee/100);
+  const margenBarco = precio > 0 ? ((precio - totalBarco - feeAmt) / precio * 100).toFixed(1) : '—';
+  const margenAereo = precio > 0 ? ((precio - totalAereo - feeAmt) / precio * 100).toFixed(1) : '—';
+
+  const daysNeeded = fecha.shipDays + fecha.prepDays;
+  const puedeBarco = daysLeft >= daysNeeded;
+  const puedeAereo = daysLeft > 0 && daysLeft < daysNeeded + 30;
+
+  document.getElementById('freightCompareBox').style.display = '';
+  document.getElementById('freightCompareContent').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px">
+      <div style="padding:12px;border:1px solid ${puedeBarco?'rgba(0,229,160,0.3)':'rgba(255,71,87,0.3)'};background:${puedeBarco?'rgba(0,229,160,0.04)':'rgba(255,71,87,0.04)'}">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px">🚢 BARCO — ${fecha.shipDays}d</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:${puedeBarco?'#00E5A0':'#FF4757'}">$${totalBarco.toFixed(2)}/u</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">Margen: <span style="color:${parseFloat(margenBarco)>30?'#00E5A0':'#FFB800'}">${margenBarco}%</span></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:6px;color:${puedeBarco?'#00E5A0':'#FF4757'}">${puedeBarco?'✓ VIABLE':'✗ NO LLEGA A TIEMPO'}</div>
+      </div>
+      <div style="padding:12px;border:1px solid ${puedeAereo?'rgba(255,149,0,0.3)':'rgba(255,71,87,0.3)'};background:${puedeAereo?'rgba(255,149,0,0.04)':'rgba(255,71,87,0.04)'}">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:6px">✈ AÉREO — 5–10d</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--estacional)">$${totalAereo.toFixed(2)}/u</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">Margen: <span style="color:${parseFloat(margenAereo)>20?'#FFB800':'#FF4757'}">${margenAereo}%</span></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:6px;color:var(--estacional)">↑ $${(totalAereo-totalBarco).toFixed(2)}/u más caro</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.6">
+      ${puedeBarco 
+        ? `✅ Tenés tiempo para barco. Fecha límite de orden: <span style="color:var(--accent);font-family:'JetBrains Mono'">${fmtDate(addDays(fecha.date, -(fecha.shipDays+fecha.prepDays)))}</span>` 
+        : `🚨 No llegás por barco. ${puedeAereo?'El aéreo es tu única opción si querés esta fecha.':'Considerá proyectar para la próxima edición de esta fecha.'}`}
+    </div>`;
+}
+
+function initShippingMode() {
+  const block = document.getElementById('shippingModeBlock');
+  if(!activeFecha) { block.style.display='none'; return; }
+  const f = FECHAS.find(x=>x.id===activeFecha);
+  if(!f) { block.style.display='none'; return; }
+
+  const daysLeft = getDaysUntil(f.date);
+  const daysNeeded = f.shipDays + f.prepDays;
+  const puedeBarco = daysLeft >= daysNeeded;
+  const status = daysLeft < 0 ? 'past' : puedeBarco ? 'ok' : 'urgent';
+
+  block.style.display = '';
+  document.getElementById('shippingModeCards').innerHTML = `
+    <div style="padding:12px 16px;border:2px solid ${puedeBarco?'var(--accent)':'rgba(255,255,255,0.07)'};background:${puedeBarco?'rgba(0,229,160,0.05)':'none'};cursor:pointer;flex:1;min-width:140px" onclick="setShippingMode('barco',${f.shipDays})">
+      <div style="font-size:16px;margin-bottom:4px">🚢</div>
+      <div style="font-size:12px;font-weight:700;color:${puedeBarco?'var(--accent)':'var(--muted)'}">Barco</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">${f.shipDays} días · más barato</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:4px;color:${puedeBarco?'var(--accent)':'var(--red)'}">${puedeBarco?'✓ VIABLE':'✗ NO LLEGA'}</div>
+    </div>
+    <div style="padding:12px 16px;border:2px solid ${!puedeBarco?'var(--estacional)':'rgba(255,255,255,0.07)'};background:${!puedeBarco?'rgba(255,149,0,0.05)':'none'};cursor:pointer;flex:1;min-width:140px" onclick="setShippingMode('aereo',7)">
+      <div style="font-size:16px;margin-bottom:4px">✈</div>
+      <div style="font-size:12px;font-weight:700;color:var(--estacional)">Aéreo express</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">5–10 días · 3–5x más caro</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:4px;color:var(--estacional)">✓ Siempre viable</div>
+    </div>
+    <div style="padding:12px 16px;border:2px solid rgba(255,255,255,0.07);cursor:pointer;flex:1;min-width:140px" onclick="setShippingMode('local',0)">
+      <div style="font-size:16px;margin-bottom:4px">📍</div>
+      <div style="font-size:12px;font-weight:700;color:var(--muted)">Stock local</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted)">Sin espera · precio mayor</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:10px;margin-top:4px;color:var(--muted)">✓ Inmediato</div>
+    </div>`;
+}
+
+function setShippingMode(mode, days) {
+  const peso = parseFloat(document.getElementById('cPeso').value)||0;
+  const label = document.getElementById('fleteLabel');
+  const note = document.getElementById('fleteNote');
+  if(mode==='barco') {
+    const flete = peso>0 ? (peso*1.8).toFixed(2) : '';
+    if(flete) document.getElementById('cEnvio').value = flete;
+    if(label) label.textContent = '🚢 BARCO';
+    if(note) note.textContent = peso>0 ? `Marítimo: $1.80/kg × ${peso}kg = $${flete}/u` : 'Barco China→AR ≈ $0.80–2.00/u';
+  } else if(mode==='aereo') {
+    const flete = peso>0 ? (peso*6.5).toFixed(2) : '';
+    if(flete) document.getElementById('cEnvio').value = flete;
+    if(label) label.textContent = '✈ AÉREO';
+    if(note) note.textContent = peso>0 ? `Aéreo: $6.50/kg × ${peso}kg = $${flete}/u` : 'Aéreo express ≈ $4.00–8.00/u';
+  } else {
+    document.getElementById('cEnvio').value = '0';
+    if(label) label.textContent = '📍 LOCAL';
+    if(note) note.textContent = 'Sin costo de flete — proveedor local';
+  }
+  calcular();
+}
+
+
 function calcular() {
   const costo = parseFloat(document.getElementById('cCosto').value)||0;
   const envio = parseFloat(document.getElementById('cEnvio').value)||0;
-  const aduana = parseFloat(document.getElementById('cAduana').value)||0;
+  const seguro = parseFloat(document.getElementById('cSeguro')?.value)||0;
   const pack = parseFloat(document.getElementById('cPack').value)||0;
+  const banco = parseFloat(document.getElementById('cBanco')?.value)||0;
   const precio = parseFloat(document.getElementById('cPrecio').value)||0;
   const fee = parseFloat(document.getElementById('cFee').value)||0;
   const unidades = parseInt(document.getElementById('cUnidades').value)||0;
   const ventas = parseInt(document.getElementById('cVentas').value)||0;
+  const arancel = parseFloat(document.getElementById('cArancel')?.value)||0;
+  const iva = parseFloat(document.getElementById('cIVA')?.value)||0;
 
-  if(!costo||!precio) return;
+  if(!costo) return;
 
-  const costoTotal = costo + envio + aduana + pack;
+  // Auto-calculate aduana: (costo + envio + seguro) × (arancel + iva) / 100
+  const valorCIF = costo + envio + seguro;
+  const aduanaAuto = valorCIF * ((arancel + iva) / 100);
+
+  // Update aduana field if empty or auto
+  const aduanaField = document.getElementById('cAduana');
+  if(aduanaField && (aduanaField.value === '' || aduanaField.dataset.auto === 'true') && valorCIF > 0) {
+    aduanaField.value = aduanaAuto.toFixed(2);
+    aduanaField.dataset.auto = 'true';
+    const note = document.getElementById('aduanaNote');
+    if(note) note.textContent = `CIF $${valorCIF.toFixed(2)} × ${arancel+iva}% (${arancel}% arancel + ${iva}% IVA) = $${aduanaAuto.toFixed(2)}`;
+  }
+  const aduana = parseFloat(aduanaField?.value)||aduanaAuto;
+
+  const costoTotal = costo + envio + seguro + aduana + pack + banco;
+
+  // Update landing cost display
+  const landingEl = document.getElementById('costoAterrizajeVal');
+  const landingSub = document.getElementById('costoAterrizajeSub');
+  if(landingEl) landingEl.textContent = `$${costoTotal.toFixed(2)}`;
+  if(landingSub) landingSub.textContent = `Proveedor $${costo} + Flete $${envio} + Seguro $${seguro} + Aduana $${aduana.toFixed(2)} + Prep $${pack} + Banco $${banco}`;
+
+  if(!precio) return;
+
   const feeAmt = precio * (fee/100);
   const gananciaU = precio - costoTotal - feeAmt;
   const margenPct = precio > 0 ? (gananciaU/precio*100) : 0;
@@ -1178,15 +1429,15 @@ function calcular() {
   // Metrics
   const mClass = (val, good, warn) => val >= good ? 'highlight' : val >= warn ? 'warn' : 'danger';
   document.getElementById('calcMetrics').innerHTML = [
-    { label:'Costo total/u', val:`$${costoTotal.toFixed(2)}`, sub:'prod+envío+aduana+pack', cls:'' },
+    { label:'Costo aterrizaje/u', val:`$${costoTotal.toFixed(2)}`, sub:'todos los costos incluidos', cls:'' },
     { label:'Margen neto', val:`${margenPct.toFixed(1)}%`, sub:'sobre precio de venta', cls:mClass(margenPct,35,20) },
-    { label:'Ganancia/u', val:`$${gananciaU.toFixed(2)}`, sub:'después de todos los costos', cls:mClass(gananciaU,8,3) },
+    { label:'Ganancia/u', val:`$${gananciaU.toFixed(2)}`, sub:'después de fees del canal', cls:mClass(gananciaU,8,3) },
     { label:'Inversión total', val:`$${inversion.toFixed(0)}`, sub:`${unidades||'—'} unidades`, cls:'' },
     { label:'Break-even', val:breakEvenDays?`${breakEvenDays}d`:`${breakEvenUnits}u`, sub:breakEvenDays?'días para recuperar':'unidades para recuperar', cls:mClass(breakEvenDays?60-breakEvenDays:30-breakEvenUnits,20,0) },
     { label:'ROI/mes', val:roiMensual>0?`${roiMensual.toFixed(0)}%`:'—', sub:'sobre inversión inicial', cls:mClass(roiMensual,30,10) },
   ].map(m=>`<div class="calc-metric ${m.cls}"><div class="calc-metric-label">${m.label}</div><div class="calc-metric-value">${m.val}</div><div class="calc-metric-sub">${m.sub}</div></div>`).join('');
 
-  calcData = { costoTotal, gananciaU, margenPct, inversion, breakEvenDays, roiMensual, precio, ventas, unidades, fee };
+  calcData = { costoTotal, gananciaU, margenPct, inversion, breakEvenDays, roiMensual, precio, ventas, unidades, fee, aduana, arancel, iva };
 
   // Veredicto
   const vBar = document.getElementById('verdictBar');
