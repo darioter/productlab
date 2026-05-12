@@ -1115,8 +1115,6 @@ function hideSegHint() {
 
 async function loadNichosSeg(segKey) {
   hideSegHint();
-  // Activate the segment selector
-  setSeg(segKey);
 
   const colores = {
     tendencia: { color:'var(--tendencia)', icon:'🔥', label:'Tendencia ahora' },
@@ -1125,13 +1123,18 @@ async function loadNichosSeg(segKey) {
   };
   const s = colores[segKey];
 
-  // Show loading inside chips area
-  document.getElementById('nichoTitle').textContent = `${s.icon} Generando nichos de ${s.label.toLowerCase()}...`;
+  // Mostrar banner con loading INMEDIATAMENTE antes de llamar a la IA
+  const banner = document.getElementById('nichoBanner');
+  banner.style.borderLeftColor = s.color;
+  document.getElementById('nichoIcon').textContent = s.icon;
+  document.getElementById('nichoTitle').textContent = `Buscando nichos de ${s.label.toLowerCase()}...`;
+  document.getElementById('nichoSub').textContent = 'IA ANALIZANDO';
   document.getElementById('nichoChips').innerHTML = `
-    <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted);padding:10px 0;display:flex;align-items:center;gap:8px">
+    <div style="display:flex;align-items:center;gap:10px;padding:8px 0;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--muted)">
       <div style="width:14px;height:14px;border:2px solid var(--border);border-top-color:${s.color};border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0"></div>
-      Analizando tendencias actuales...
+      Analizando tendencias para ${new Date().toLocaleDateString('es-AR',{month:'long',year:'numeric'})}...
     </div>`;
+  banner.classList.add('visible');
 
   // Context for AI
   const ahora = new Date();
