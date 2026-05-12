@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { supabase } from '../../lib/supabase';
@@ -180,7 +180,7 @@ const CAPITULOS = [
 ];
 
 function ManualBook() {
-  const [page, setPage] = React.useState(0);
+  const [page, setPage] = useState(0);
   const cap = CAPITULOS[page];
   const total = CAPITULOS.length;
 
