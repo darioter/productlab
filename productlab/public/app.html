@@ -825,33 +825,103 @@ let calcData = {};
 // FECHAS CLAVE — CATÁLOGO COMPLETO
 // ═══════════════════════════════════════════════
 const FECHAS = [
-  // E-COMMERCE
-  { id:'blackfriday',  emoji:'🖤', name:'Black Friday',        date:'2025-11-28', color:'#FF4757', type:'ecom',       shipDays:55, prepDays:15 },
-  { id:'cybermonday',  emoji:'💻', name:'Cyber Monday',        date:'2025-12-01', color:'#0066FF', type:'ecom',       shipDays:55, prepDays:15 },
-  { id:'cybermondayar',emoji:'🇦🇷', name:'Cyber Monday AR',    date:'2025-12-02', color:'#0066FF', type:'ecom',       shipDays:55, prepDays:15 },
-  { id:'hotsale',      emoji:'🔥', name:'Hot Sale',            date:'2026-05-11', color:'#FF6A00', type:'ecom',       shipDays:50, prepDays:12 },
-  { id:'primeday',     emoji:'📦', name:'Amazon Prime Day',    date:'2026-07-15', color:'#00E5A0', type:'ecom',       shipDays:50, prepDays:15 },
-  // FECHAS SOCIALES
-  { id:'navidad',      emoji:'🎄', name:'Navidad',             date:'2025-12-25', color:'#00E5A0', type:'social',     shipDays:55, prepDays:15 },
-  { id:'anonuevo',     emoji:'🎆', name:'Año Nuevo',           date:'2026-01-01', color:'#FFB800', type:'social',     shipDays:55, prepDays:10 },
-  { id:'valentín',     emoji:'💕', name:'San Valentín',        date:'2026-02-14', color:'#FF3B8B', type:'social',     shipDays:50, prepDays:12 },
-  { id:'pascuas',      emoji:'🐣', name:'Pascuas',             date:'2026-04-05', color:'#96BF48', type:'social',     shipDays:50, prepDays:12 },
-  { id:'madre',        emoji:'💐', name:'Día de la Madre',     date:'2026-05-17', color:'#FF3B8B', type:'social',     shipDays:50, prepDays:10 },
-  { id:'padre',        emoji:'👔', name:'Día del Padre',       date:'2026-06-21', color:'#0066FF', type:'social',     shipDays:50, prepDays:10 },
-  { id:'mundial',      emoji:'⚽', name:'Mundial 2026',        date:'2026-06-11', color:'#FF6A00', type:'social',     shipDays:55, prepDays:20 },
-  { id:'nino',         emoji:'🧸', name:'Día del Niño',        date:'2026-08-09', color:'#FFB800', type:'social',     shipDays:55, prepDays:15 },
-  { id:'primavera',    emoji:'🌸', name:'Día de la Primavera', date:'2026-09-21', color:'#96BF48', type:'social',     shipDays:55, prepDays:12 },
-  { id:'maestro',      emoji:'📚', name:'Día del Maestro',     date:'2026-09-11', color:'#96BF48', type:'social',     shipDays:55, prepDays:12 },
-  { id:'halloween',    emoji:'🎃', name:'Halloween',           date:'2026-10-31', color:'#FF6A00', type:'social',     shipDays:55, prepDays:15 },
-  // VACACIONES
-  { id:'vacverano',    emoji:'☀️', name:'Vacaciones de Verano', date:'2026-01-20', color:'#FFB800', type:'vacaciones', shipDays:50, prepDays:10 },
-  { id:'vacinvierno',  emoji:'⛷️', name:'Vacaciones de Invierno',date:'2026-07-15',color:'#0066FF',type:'vacaciones', shipDays:50, prepDays:12 },
-  // PREVACACIONES
-  { id:'prevverano',   emoji:'🌊', name:'Pre-vacaciones Verano', date:'2025-12-15', color:'#FF9500', type:'prevac',   shipDays:50, prepDays:10 },
-  { id:'previnvierno', emoji:'🧥', name:'Pre-vacaciones Invierno',date:'2026-06-15',color:'#FF9500',type:'prevac',   shipDays:50, prepDays:10 },
-  // VUELTA AL COLE
-  { id:'cole',         emoji:'🎒', name:'Vuelta al Cole',       date:'2026-03-02', color:'#96BF48', type:'social',   shipDays:45, prepDays:10 },
+  // ── E-COMMERCE 2026 ──
+  { id:'hotsale26',      emoji:'🔥', name:'Hot Sale 2026',           date:'2026-05-11', color:'#FF6A00', type:'ecom',       shipDays:50, prepDays:12 },
+  { id:'primeday26',     emoji:'📦', name:'Amazon Prime Day 2026',   date:'2026-07-15', color:'#00E5A0', type:'ecom',       shipDays:50, prepDays:15 },
+  { id:'blackfriday26',  emoji:'🖤', name:'Black Friday 2026',       date:'2026-11-27', color:'#FF4757', type:'ecom',       shipDays:55, prepDays:15 },
+  { id:'cybermonday26',  emoji:'💻', name:'Cyber Monday 2026',       date:'2026-11-30', color:'#0066FF', type:'ecom',       shipDays:55, prepDays:15 },
+  // ── FECHAS SOCIALES 2026 ──
+  { id:'navidad26',      emoji:'🎄', name:'Navidad 2026',            date:'2026-12-25', color:'#00E5A0', type:'social',     shipDays:55, prepDays:15 },
+  { id:'anonuevo26',     emoji:'🎆', name:'Año Nuevo 2026',          date:'2026-01-01', color:'#FFB800', type:'social',     shipDays:55, prepDays:10 },
+  { id:'valentín26',     emoji:'💕', name:'San Valentín 2026',       date:'2026-02-14', color:'#FF3B8B', type:'social',     shipDays:50, prepDays:12 },
+  { id:'pascuas26',      emoji:'🐣', name:'Pascuas 2026',            date:'2026-04-05', color:'#96BF48', type:'social',     shipDays:50, prepDays:12 },
+  { id:'madre26',        emoji:'💐', name:'Día de la Madre 2026',    date:'2026-05-17', color:'#FF3B8B', type:'social',     shipDays:50, prepDays:10 },
+  { id:'padre26',        emoji:'👔', name:'Día del Padre 2026',      date:'2026-06-21', color:'#0066FF', type:'social',     shipDays:50, prepDays:10 },
+  { id:'mundial26',      emoji:'⚽', name:'Mundial 2026',            date:'2026-06-11', color:'#FF6A00', type:'social',     shipDays:55, prepDays:20 },
+  { id:'nino26',         emoji:'🧸', name:'Día del Niño 2026',       date:'2026-08-09', color:'#FFB800', type:'social',     shipDays:55, prepDays:15 },
+  { id:'maestro26',      emoji:'📚', name:'Día del Maestro 2026',    date:'2026-09-11', color:'#96BF48', type:'social',     shipDays:55, prepDays:12 },
+  { id:'primavera26',    emoji:'🌸', name:'Día de la Primavera 2026',date:'2026-09-21', color:'#96BF48', type:'social',     shipDays:55, prepDays:12 },
+  { id:'halloween26',    emoji:'🎃', name:'Halloween 2026',          date:'2026-10-31', color:'#FF6A00', type:'social',     shipDays:55, prepDays:15 },
+  { id:'cole26',         emoji:'🎒', name:'Vuelta al Cole 2026',     date:'2026-03-02', color:'#96BF48', type:'social',     shipDays:45, prepDays:10 },
+  // ── VACACIONES 2026 ──
+  { id:'vacverano26',    emoji:'☀️', name:'Vacaciones Verano 2026',  date:'2026-01-20', color:'#FFB800', type:'vacaciones', shipDays:50, prepDays:10 },
+  { id:'vacinvierno26',  emoji:'⛷️', name:'Vacaciones Invierno 2026',date:'2026-07-15', color:'#0066FF', type:'vacaciones', shipDays:50, prepDays:12 },
+  // ── PREVACACIONES 2026 ──
+  { id:'prevverano26',   emoji:'🌊', name:'Pre-vacaciones Verano 2026',  date:'2026-12-15', color:'#FF9500', type:'prevac', shipDays:50, prepDays:10 },
+  { id:'previnvierno26', emoji:'🧥', name:'Pre-vacaciones Invierno 2026',date:'2026-06-15', color:'#FF9500', type:'prevac', shipDays:50, prepDays:10 },
+  // ── E-COMMERCE 2027 ──
+  { id:'hotsale27',      emoji:'🔥', name:'Hot Sale 2027',           date:'2027-05-10', color:'#FF6A00', type:'ecom',       shipDays:50, prepDays:12 },
+  { id:'primeday27',     emoji:'📦', name:'Amazon Prime Day 2027',   date:'2027-07-14', color:'#00E5A0', type:'ecom',       shipDays:50, prepDays:15 },
+  { id:'blackfriday27',  emoji:'🖤', name:'Black Friday 2027',       date:'2027-11-26', color:'#FF4757', type:'ecom',       shipDays:55, prepDays:15 },
+  { id:'cybermonday27',  emoji:'💻', name:'Cyber Monday 2027',       date:'2027-11-29', color:'#0066FF', type:'ecom',       shipDays:55, prepDays:15 },
+  // ── FECHAS SOCIALES 2027 ──
+  { id:'valentín27',     emoji:'💕', name:'San Valentín 2027',       date:'2027-02-14', color:'#FF3B8B', type:'social',     shipDays:50, prepDays:12 },
+  { id:'pascuas27',      emoji:'🐣', name:'Pascuas 2027',            date:'2027-03-28', color:'#96BF48', type:'social',     shipDays:50, prepDays:12 },
+  { id:'madre27',        emoji:'💐', name:'Día de la Madre 2027',    date:'2027-05-16', color:'#FF3B8B', type:'social',     shipDays:50, prepDays:10 },
+  { id:'padre27',        emoji:'👔', name:'Día del Padre 2027',      date:'2027-06-20', color:'#0066FF', type:'social',     shipDays:50, prepDays:10 },
+  { id:'nino27',         emoji:'🧸', name:'Día del Niño 2027',       date:'2027-08-08', color:'#FFB800', type:'social',     shipDays:55, prepDays:15 },
+  { id:'halloween27',    emoji:'🎃', name:'Halloween 2027',          date:'2027-10-31', color:'#FF6A00', type:'social',     shipDays:55, prepDays:15 },
+  { id:'navidad27',      emoji:'🎄', name:'Navidad 2027',            date:'2027-12-25', color:'#00E5A0', type:'social',     shipDays:55, prepDays:15 },
+  { id:'cole27',         emoji:'🎒', name:'Vuelta al Cole 2027',     date:'2027-03-01', color:'#96BF48', type:'social',     shipDays:45, prepDays:10 },
+  // ── VACACIONES 2027 ──
+  { id:'vacverano27',    emoji:'☀️', name:'Vacaciones Verano 2027',  date:'2027-01-20', color:'#FFB800', type:'vacaciones', shipDays:50, prepDays:10 },
+  { id:'vacinvierno27',  emoji:'⛷️', name:'Vacaciones Invierno 2027',date:'2027-07-15', color:'#0066FF', type:'vacaciones', shipDays:50, prepDays:12 },
+  { id:'prevverano27',   emoji:'🌊', name:'Pre-vacaciones Verano 2027',  date:'2027-12-15', color:'#FF9500', type:'prevac', shipDays:50, prepDays:10 },
+  { id:'previnvierno27', emoji:'🧥', name:'Pre-vacaciones Invierno 2027',date:'2027-06-15', color:'#FF9500', type:'prevac', shipDays:50, prepDays:10 },
+  // ── E-COMMERCE 2028 ──
+  { id:'hotsale28',      emoji:'🔥', name:'Hot Sale 2028',           date:'2028-05-08', color:'#FF6A00', type:'ecom',       shipDays:50, prepDays:12 },
+  { id:'blackfriday28',  emoji:'🖤', name:'Black Friday 2028',       date:'2028-11-24', color:'#FF4757', type:'ecom',       shipDays:55, prepDays:15 },
+  { id:'cybermonday28',  emoji:'💻', name:'Cyber Monday 2028',       date:'2028-11-27', color:'#0066FF', type:'ecom',       shipDays:55, prepDays:15 },
+  // ── FECHAS SOCIALES 2028 ──
+  { id:'valentín28',     emoji:'💕', name:'San Valentín 2028',       date:'2028-02-14', color:'#FF3B8B', type:'social',     shipDays:50, prepDays:12 },
+  { id:'madre28',        emoji:'💐', name:'Día de la Madre 2028',    date:'2028-05-21', color:'#FF3B8B', type:'social',     shipDays:50, prepDays:10 },
+  { id:'padre28',        emoji:'👔', name:'Día del Padre 2028',      date:'2028-06-18', color:'#0066FF', type:'social',     shipDays:50, prepDays:10 },
+  { id:'nino28',         emoji:'🧸', name:'Día del Niño 2028',       date:'2028-08-13', color:'#FFB800', type:'social',     shipDays:55, prepDays:15 },
+  { id:'halloween28',    emoji:'🎃', name:'Halloween 2028',          date:'2028-10-31', color:'#FF6A00', type:'social',     shipDays:55, prepDays:15 },
+  { id:'navidad28',      emoji:'🎄', name:'Navidad 2028',            date:'2028-12-25', color:'#00E5A0', type:'social',     shipDays:55, prepDays:15 },
+  { id:'cole28',         emoji:'🎒', name:'Vuelta al Cole 2028',     date:'2028-03-06', color:'#96BF48', type:'social',     shipDays:45, prepDays:10 },
+  { id:'vacverano28',    emoji:'☀️', name:'Vacaciones Verano 2028',  date:'2028-01-20', color:'#FFB800', type:'vacaciones', shipDays:50, prepDays:10 },
+  { id:'vacinvierno28',  emoji:'⛷️', name:'Vacaciones Invierno 2028',date:'2028-07-15', color:'#0066FF', type:'vacaciones', shipDays:50, prepDays:12 },
 ];
+
+// ── PESO ESTIMADO POR CATEGORÍA (kg/unidad) ──
+const PESO_POR_NICHO = {
+  'cocina':0.4, 'utensilios':0.3, 'hogar':0.5, 'decoracion':0.6,
+  'fitness':0.8, 'deporte':0.7, 'outdoor':1.2, 'camping':1.5,
+  'mascotas':0.4, 'bebe':0.3, 'infantil':0.4, 'juguete':0.5,
+  'electronica':0.6, 'gadget':0.3, 'tecnologia':0.5,
+  'ropa':0.3, 'indumentaria':0.3, 'calzado':0.6, 'textil':0.4,
+  'belleza':0.2, 'cuidado':0.2, 'cosmetica':0.3,
+  'joyeria':0.1, 'accesorio':0.2,
+  'libro':0.4, 'papeleria':0.3, 'escolar':0.5,
+  'herramienta':0.8, 'construccion':1.0,
+  'auto':0.5, 'vehiculo':0.8,
+  'jardineria':0.6, 'planta':0.4,
+  'default':0.45
+};
+
+function estimarPeso(nicho, nombre) {
+  const texto = ((nicho||'')+(nombre||'')).toLowerCase();
+  for(const [key, val] of Object.entries(PESO_POR_NICHO)) {
+    if(texto.includes(key)) return val;
+  }
+  return PESO_POR_NICHO.default;
+}
+
+// ── FEE POR CANAL ──
+const FEE_POR_CANAL = { amazon:32, meli:15, shopify:6, multi:20 };
+
+// ── ARANCEL POR CATEGORÍA ──
+function arancelPorNicho(nicho, nombre) {
+  const texto = ((nicho||'')+(nombre||'')).toLowerCase();
+  if(['electronica','gadget','tecnologia','celular','tablet','computadora'].some(x=>texto.includes(x))) return {arancel:35,iva:21,cat:'35_21'};
+  if(['ropa','indumentaria','textil','calzado','vestimenta'].some(x=>texto.includes(x))) return {arancel:35,iva:21,cat:'35_21b'};
+  if(['juguete','infantil','bebe','niño'].some(x=>texto.includes(x))) return {arancel:20,iva:21,cat:'20_21c'};
+  if(['libro','educativo','escolar'].some(x=>texto.includes(x))) return {arancel:12,iva:21,cat:'12_21'};
+  if(['alimento','comida','bebida'].some(x=>texto.includes(x))) return {arancel:0,iva:10.5,cat:'0_21'};
+  return {arancel:20,iva:21,cat:'20_21'}; // default cocina/hogar
+}
+
 
 function getDaysUntil(dateStr) {
   const now = new Date(); now.setHours(0,0,0,0);
@@ -952,35 +1022,39 @@ function closeSP() {
 // NICHOS POR FECHA
 // ═══════════════════════════════════════════════
 const NICHOS = {
-  blackfriday:   { seg:'tendencia', chipType:'ecom-chip',      rubros:['Electrónica','Auriculares','Smart Home','Fitness','Ropa','Juguetes','Perfumes','Valijas','Gaming','Sillas ergonómicas'] },
-  cybermonday:   { seg:'tendencia', chipType:'ecom-chip',      rubros:['Electrónica','Gadgets','Accesorios PC','Software','Libros digitales','Cursos','Smart Home','Auriculares','Tablets'] },
-  cybermondayar: { seg:'tendencia', chipType:'ecom-chip',      rubros:['Electrónica','Indumentaria','Calzado','Hogar','Juguetes','Deportes','Belleza','Libros','Accesorios celular'] },
-  hotsale:       { seg:'tendencia', chipType:'ecom-chip',      rubros:['Indumentaria','Calzado','Electrónica','Hogar','Muebles','Colchones','Electrodomésticos','Turismo','Libros'] },
-  primeday:      { seg:'tendencia', chipType:'ecom-chip',      rubros:['Electrónica','Smart Home','Cocina','Fitness','Libros','Herramientas','Belleza','Mascotas','Oficina en casa'] },
-  navidad:       { seg:'estacional', chipType:'',              rubros:['Juguetes','Decoración navideña','Kits regalo','Perfumes','Chocolates','Ropa','Electrónica','Adornos','Velas','Libros'] },
-  anonuevo:      { seg:'estacional', chipType:'',              rubros:['Decoración fiesta','Cotillón','Ropa de fiesta','Fuegos artificiales','Accesorios bar','Velas','Agenda planners'] },
-  valentín:      { seg:'estacional', chipType:'',              rubros:['Joyería','Perfumes','Chocolates','Flores artificiales','Ropa interior','Velas','Spa en casa','Kits regalo pareja'] },
-  pascuas:       { seg:'estacional', chipType:'',              rubros:['Chocolates','Huevos decorativos','Decoración','Juguetes niños','Canastas regalo','Artesanías'] },
-  madre:         { seg:'estacional', chipType:'',              rubros:['Belleza','Spa en casa','Perfumes','Joyería','Flores artificiales','Cocina','Ropa','Kits cuidado personal','Velas','Tazas personalizadas'] },
-  padre:         { seg:'estacional', chipType:'',              rubros:['Herramientas','BBQ/asado','Indumentaria','Electrónica','Deportes','Relojes','Perfumes','Accesorios auto','Libros','Kits mate'] },
-  mundial:       { seg:'tendencia', chipType:'tendencia-chip', rubros:['Indumentaria deportiva','Accesorios fan','Decoración','Snacks/BBQ','Televisores','Banderas','Camisetas','Artículos coleccionables'] },
-  nino:          { seg:'estacional', chipType:'',              rubros:['Juguetes','Juegos de mesa','Figuritas','LEGO','Libros infantiles','Arte y manualidades','Outdoor niños','Ropa infantil'] },
-  primavera:     { seg:'estacional', chipType:'',              rubros:['Jardinería','Ropa liviana','Deportes outdoor','Bicicletas','Piscinas','Accesorios parque','Plantas','Perfumes florales'] },
-  maestro:       { seg:'estacional', chipType:'',              rubros:['Kits escritorio','Tazas','Libros','Artículos personalizados','Plantas de escritorio','Agenda planners','Chocolates'] },
-  halloween:     { seg:'estacional', chipType:'',              rubros:['Disfraces','Decoración terror','Maquillaje especial','Dulces','Cotillón','Accesorios fiesta','Velas negras'] },
-  vacverano:     { seg:'estacional', chipType:'',              rubros:['Ropa de baño','Accesorios playa','Protector solar','Valijas','Juguetes agua','Colchonetas','Mate y termo','Lentes de sol','Camping'] },
-  vacinvierno:   { seg:'estacional', chipType:'',              rubros:['Ropa de abrigo','Ski/snowboard','Juegos de mesa','Libros','Chocolate caliente','Mantas','Calzado invierno','Termo y mate'] },
-  prevverano:    { seg:'estacional', chipType:'',              rubros:['Trajes de baño','Accesorios playa','Valijas','Protector solar','Snorkeling','Cámaras acuáticas','Sandalias','Cremas bronceadoras'] },
-  previnvierno:  { seg:'estacional', chipType:'',              rubros:['Camperas','Botas','Guantes','Bufandas','Calefactores','Termo','Mantas eléctricas','Tazas térmicas'] },
-  cole:          { seg:'estacional', chipType:'',              rubros:['Mochilas','Útiles escolares','Loncheras','Botella agua','Organización escritorio','Auriculares estudio','Ropa escolar','Calculadoras'] },
+  blackfriday:   { seg:'tendencia', chipType:'ecom-chip', rubros:['Electrónica','Auriculares','Smart Home','Fitness','Ropa','Juguetes','Perfumes','Valijas','Gaming','Sillas ergonómicas'] },
+  cybermonday:   { seg:'tendencia', chipType:'ecom-chip', rubros:['Electrónica','Gadgets','Accesorios PC','Smart Home','Auriculares','Tablets','Cursos online'] },
+  hotsale:       { seg:'tendencia', chipType:'ecom-chip', rubros:['Indumentaria','Calzado','Electrónica','Hogar','Muebles','Colchones','Electrodomésticos','Libros'] },
+  primeday:      { seg:'tendencia', chipType:'ecom-chip', rubros:['Electrónica','Smart Home','Cocina','Fitness','Libros','Herramientas','Belleza','Mascotas','Oficina'] },
+  navidad:       { seg:'estacional', chipType:'', rubros:['Juguetes','Decoración navideña','Kits regalo','Perfumes','Chocolates','Ropa','Electrónica','Adornos','Velas','Libros'] },
+  anonuevo:      { seg:'estacional', chipType:'', rubros:['Decoración fiesta','Cotillón','Ropa de fiesta','Accesorios bar','Velas','Agenda planners'] },
+  valentín:      { seg:'estacional', chipType:'', rubros:['Joyería','Perfumes','Chocolates','Flores artificiales','Ropa interior','Velas','Spa en casa','Kits regalo pareja'] },
+  pascuas:       { seg:'estacional', chipType:'', rubros:['Chocolates','Huevos decorativos','Decoración','Juguetes niños','Canastas regalo','Artesanías'] },
+  madre:         { seg:'estacional', chipType:'', rubros:['Belleza','Spa en casa','Perfumes','Joyería','Flores artificiales','Cocina','Ropa','Kits cuidado personal','Velas','Tazas'] },
+  padre:         { seg:'estacional', chipType:'', rubros:['Herramientas','BBQ/asado','Indumentaria','Electrónica','Deportes','Relojes','Perfumes','Accesorios auto','Kits mate'] },
+  mundial:       { seg:'tendencia', chipType:'tendencia-chip', rubros:['Indumentaria deportiva','Accesorios fan','Decoración','Snacks/BBQ','Televisores','Banderas','Camisetas','Coleccionables'] },
+  nino:          { seg:'estacional', chipType:'', rubros:['Juguetes','Juegos de mesa','Figuritas','LEGO','Libros infantiles','Arte y manualidades','Outdoor niños','Ropa infantil'] },
+  primavera:     { seg:'estacional', chipType:'', rubros:['Jardinería','Ropa liviana','Deportes outdoor','Bicicletas','Piscinas','Accesorios parque','Plantas','Perfumes florales'] },
+  maestro:       { seg:'estacional', chipType:'', rubros:['Kits escritorio','Tazas','Libros','Artículos personalizados','Plantas escritorio','Agenda planners','Chocolates'] },
+  halloween:     { seg:'estacional', chipType:'', rubros:['Disfraces','Decoración terror','Maquillaje especial','Dulces','Cotillón','Accesorios fiesta','Velas negras'] },
+  vacverano:     { seg:'estacional', chipType:'', rubros:['Ropa de baño','Accesorios playa','Protector solar','Valijas','Juguetes agua','Colchonetas','Mate y termo','Lentes de sol','Camping'] },
+  vacinvierno:   { seg:'estacional', chipType:'', rubros:['Ropa de abrigo','Ski/snowboard','Juegos de mesa','Libros','Chocolate caliente','Mantas','Calzado invierno','Termo y mate'] },
+  prevverano:    { seg:'estacional', chipType:'', rubros:['Trajes de baño','Accesorios playa','Valijas','Protector solar','Snorkeling','Cámaras acuáticas','Sandalias','Bronceadores'] },
+  previnvierno:  { seg:'estacional', chipType:'', rubros:['Camperas','Botas','Guantes','Bufandas','Calefactores','Termo','Mantas eléctricas','Tazas térmicas'] },
+  cole:          { seg:'estacional', chipType:'', rubros:['Mochilas','Útiles escolares','Loncheras','Botella agua','Organización escritorio','Auriculares estudio','Ropa escolar','Calculadoras'] },
 };
+
+// Función que normaliza el id quitando el año (2026/2027/2028) para buscar en NICHOS
+function getNichoKey(fechaId) {
+  return fechaId.replace(/\d{2,4}$/, '');
+}
 
 function renderNichos(fechaId) {
   const f = FECHAS.find(x=>x.id===fechaId);
-  const n = NICHOS[fechaId];
+  const nichoKey = getNichoKey(fechaId);
+  const n = NICHOS[nichoKey];
   if(!f||!n) return;
 
-  // Auto-set segmento
   setSeg(n.seg);
 
   const banner = document.getElementById('nichoBanner');
@@ -995,6 +1069,7 @@ function renderNichos(fechaId) {
 
   banner.classList.add('visible');
 }
+
 
 function selectNicho(el, rubro) {
   document.querySelectorAll('.nicho-chip').forEach(c => c.classList.remove('selected'));
@@ -1202,19 +1277,72 @@ function renderResults(productos, category, mktSub) {
 
 function selectProduct(p) {
   selectedProduct = typeof p === 'string' ? JSON.parse(p) : p;
-  const canalRec = recCanal(selectedProduct, seg);
-  // Pre-fill calculadora
-  const costoStr = (selectedProduct.costo_estimado_usd||selectedProduct.costo_estimado||'').replace(/[^0-9.–\-]/g,'');
-  const costoMid = costoStr.includes('–') ? ((parseFloat(costoStr)+parseFloat(costoStr.split('–')[1]))/2).toFixed(2) : parseFloat(costoStr)||'';
-  const precioStr = (selectedProduct.precio_venta_usd||selectedProduct.precio_venta_usd_equiv||'').replace(/[^0-9.]/g,'');
+  const pr = selectedProduct;
+  const canalRec = recCanal(pr, seg);
+
+  // ── Costo proveedor (punto medio del rango)
+  const costoStr = (pr.costo_estimado_usd||pr.costo_estimado||'').replace(/[^0-9.\-–]/g,'');
+  const partes = costoStr.split(/[–\-]/);
+  const costoMid = partes.length === 2
+    ? ((parseFloat(partes[0])+parseFloat(partes[1]))/2).toFixed(2)
+    : parseFloat(partes[0])||'';
   if(costoMid) document.getElementById('cCosto').value = costoMid;
+
+  // ── Precio de venta
+  const precioStr = (pr.precio_venta_usd||pr.precio_venta_usd_equiv||pr.amazon?.precio||'').replace(/[^0-9.]/g,'');
   if(precioStr) document.getElementById('cPrecio').value = precioStr;
-  // Canal fees
-  const fees = {amazon:'30',meli:'15',shopify:'6',multi:'20'};
-  document.getElementById('cFee').value = fees[canalRec]||'20';
-  // Banner
-  document.getElementById('calcProdName').textContent = selectedProduct.nombre;
-  document.getElementById('calcProdMeta').textContent = selectedProduct.nicho + ' · Canal recomendado: ' + ({amazon:'Amazon FBA',meli:'MercadoLibre',shopify:'Shopify',multi:'Multi-canal'}[canalRec]);
+
+  // ── Peso estimado por nicho
+  const pesoEst = estimarPeso(pr.nicho, pr.nombre);
+  const pesoEl = document.getElementById('cPeso');
+  if(pesoEl) pesoEl.value = pesoEst;
+
+  // ── Arancel por categoría del producto
+  const arancelData = arancelPorNicho(pr.nicho, pr.nombre);
+  const categEl = document.getElementById('cCategArancel');
+  if(categEl) {
+    categEl.value = arancelData.cat;
+    document.getElementById('cArancel').value = arancelData.arancel;
+    document.getElementById('cIVA').value = arancelData.iva;
+  }
+
+  // ── Flete según fecha y modo
+  const fecha = activeFecha ? FECHAS.find(f=>f.id===activeFecha) : null;
+  const daysLeft = fecha ? getDaysUntil(fecha.date) : 999;
+  const daysNeeded = fecha ? (fecha.shipDays + fecha.prepDays) : 70;
+  const useAereo = fecha && daysLeft < daysNeeded && daysLeft > 0;
+  const tarifa = useAereo ? 6.5 : 1.8;
+  const fleteEst = (pesoEst * tarifa).toFixed(2);
+  document.getElementById('cEnvio').value = fleteEst;
+  const fleteLabel = document.getElementById('fleteLabel');
+  const fleteNote = document.getElementById('fleteNote');
+  if(fleteLabel) fleteLabel.textContent = useAereo ? '✈ AÉREO' : '🚢 BARCO';
+  if(fleteNote) fleteNote.textContent = `${useAereo?'Aéreo':'Marítimo'}: $${tarifa}/kg × ${pesoEst}kg = $${fleteEst}/u`;
+
+  // ── Seguro (1.5% del FOB)
+  const seguroEl = document.getElementById('cSeguro');
+  if(seguroEl && costoMid) seguroEl.value = (parseFloat(costoMid) * 0.015).toFixed(2);
+
+  // ── Banco estimado fijo
+  const bancoEl = document.getElementById('cBanco');
+  if(bancoEl) bancoEl.value = '0.25';
+
+  // ── Prep center
+  const packEl = document.getElementById('cPack');
+  if(packEl && !packEl.value) packEl.value = '0.40';
+
+  // ── Canal fee
+  document.getElementById('cFee').value = FEE_POR_CANAL[canalRec] || 20;
+
+  // ── Limpiar aduana para que se recalcule sola
+  const aduanaEl = document.getElementById('cAduana');
+  if(aduanaEl) { aduanaEl.value = ''; aduanaEl.dataset.auto = 'true'; }
+
+  // ── Banner
+  document.getElementById('calcProdName').textContent = pr.nombre;
+  document.getElementById('calcProdMeta').textContent =
+    `${pr.nicho} · Canal: ${({amazon:'Amazon FBA',meli:'MercadoLibre',shopify:'Shopify',multi:'Multi-canal'}[canalRec])} · Peso est: ${pesoEst}kg · Arancel: ${arancelData.arancel}%+IVA`;
+
   calcular();
   goStep(3);
 }
