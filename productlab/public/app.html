@@ -1020,7 +1020,7 @@ function renderResults(productos, category, mktSub) {
     const contrasHtml=(p.contras||[]).map(x=>`<li>${x}</li>`).join('');
     const kwHtml=(p.keywords_principales||[]).map(k=>`<span class="keyword">${k}</span>`).join('');
     let sourcingHtml='';
-    const hasAli=p.alibaba&&p.alibaba.length, hasS16=p.s1688&&p.s1688.length;
+    const hasAli=p.alibaba&&Array.isArray(p.alibaba)&&p.alibaba.length, hasS16=p.s1688&&Array.isArray(p.s1688)&&p.s1688.length;
     if(hasAli||hasS16){
       let blocks='';
       if(hasAli) blocks+=`<div class="sourcing-block alibaba"><h4>◈ Alibaba</h4>${p.alibaba.map(s=>`<div class="supplier-item"><div class="supplier-name">${s.nombre}</div><div class="supplier-meta"><span>MOQ: ${s.moq}</span><span>${s.tiempo_entrega}</span><span>${s.rating}</span></div><div class="supplier-price ali">${s.precio_usd_unidad}</div></div>`).join('')}</div>`;
