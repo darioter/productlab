@@ -512,6 +512,12 @@ select option{background:var(--surface);}
   <div class="section-title">Paso 02 — Research de producto</div>
 
   <!-- NICHO BANNER (precargado desde fecha) -->
+  <!-- HINT: aparece cuando no hay fecha seleccionada -->
+  <div id="segTabsHint" style="display:none;align-items:center;gap:8px;padding:10px 14px;background:var(--surface);border:1px solid rgba(0,102,255,0.2);margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);letter-spacing:0.06em">
+    <span style="font-size:14px">☝</span>
+    Hacé clic en un segmento arriba para ver sugerencias de rubros con IA
+  </div>
+
   <div class="nicho-banner" id="nichoBanner">
     <div class="nicho-banner-header">
       <div class="nicho-banner-icon" id="nichoIcon"></div>
@@ -1096,12 +1102,22 @@ function selectNicho(el, rubro) {
 }
 
 function clearNichos() {
-  // Sin fecha: solo ocultamos el banner — los seg-tabs son el selector
+  // Sin fecha: ocultamos el banner y mostramos hint en los tabs
   document.getElementById('nichoBanner').classList.remove('visible');
   document.getElementById('nichoChips').innerHTML = '';
+
+  // Mostrar hint debajo de los tabs
+  const hint = document.getElementById('segTabsHint');
+  if(hint) hint.style.display = 'flex';
+}
+
+function hideSegHint() {
+  const hint = document.getElementById('segTabsHint');
+  if(hint) hint.style.display = 'none';
 }
 
 async function loadNichosSeg(segKey) {
+  hideSegHint();
   // Activate the segment selector
   setSeg(segKey);
 
