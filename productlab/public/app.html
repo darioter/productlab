@@ -218,6 +218,25 @@ select option{background:var(--surface);}
 .btn-select:hover{filter:brightness(1.1);}
 .btn-detail{background:none;color:var(--muted);border:1px solid var(--border);padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
 .btn-detail:hover{border-color:rgba(255,255,255,0.15);color:var(--text);}
+.btn-save-analysis{background:none;color:var(--accent2);border:1px solid rgba(0,102,255,0.35);padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
+.btn-save-analysis:hover{background:rgba(0,102,255,0.08);border-color:var(--accent2);}
+.btn-save-analysis.saved{color:var(--accent);border-color:rgba(0,229,160,0.35);cursor:default;}
+/* AUTH BAR */
+.auth-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;}
+.auth-bar-left{display:flex;align-items:center;gap:10px;}
+.auth-user{color:var(--accent);letter-spacing:0.06em;}
+.auth-plan{color:var(--muted);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;}
+.auth-bar-right{display:flex;gap:8px;}
+.btn-auth{font-family:'JetBrains Mono',monospace;font-size:10px;padding:5px 12px;border:1px solid var(--border);color:var(--muted);background:none;cursor:pointer;letter-spacing:0.08em;text-transform:uppercase;transition:all 0.15s;text-decoration:none;display:inline-block;}
+.btn-auth:hover{border-color:rgba(255,255,255,0.2);color:var(--text);}
+.btn-auth.dashboard{color:var(--accent);border-color:rgba(0,229,160,0.3);}
+.btn-auth.login{color:var(--amber);border-color:rgba(255,184,0,0.3);}
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--surface);border:1px solid;padding:12px 18px;font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:0.06em;z-index:999;transform:translateY(80px);opacity:0;transition:all 0.3s;}
+.toast.show{transform:translateY(0);opacity:1;}
+.toast.success{border-color:rgba(0,229,160,0.4);color:var(--accent);}
+.toast.error{border-color:rgba(255,71,87,0.4);color:var(--red);}
+.toast.info{border-color:rgba(255,184,0,0.4);color:var(--amber);}
 .card-expand{display:none;border-top:1px solid var(--border);padding:16px 20px;background:var(--bg);}
 .card-expand.open{display:block;}
 .expand-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
@@ -376,6 +395,29 @@ select option{background:var(--surface);}
 </head>
 <body>
 <div class="container">
+
+<!-- AUTH BAR -->
+<div class="auth-bar" id="authBar" style="display:none">
+  <div class="auth-bar-left">
+    <span class="auth-user" id="authUserName"></span>
+    <span class="auth-plan" id="authPlan"></span>
+  </div>
+  <div class="auth-bar-right">
+    <a href="/dashboard" class="btn-auth dashboard">↗ Dashboard</a>
+    <button class="btn-auth" onclick="handleLogout()">Salir</button>
+  </div>
+</div>
+<div class="auth-bar" id="authBarGuest" style="display:none">
+  <div class="auth-bar-left">
+    <span style="color:var(--muted)">No estás logueado — guardá tus análisis</span>
+  </div>
+  <div class="auth-bar-right">
+    <a href="/auth/login" class="btn-auth login">→ Ingresar / Registrarse</a>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
 
 <header>
   <div style="display:flex;align-items:center;gap:12px">
@@ -1003,7 +1045,8 @@ function renderResults(productos, category, mktSub) {
       </div>
       <div class="tags-row">${tagHtml}${alertTag}</div>
       <div class="card-actions">
-        <button class="btn-select" onclick="selectProduct(${JSON.stringify(p).replace(/"/g,'&quot;')})">Seleccionar este producto →</button>
+        <button class="btn-select" onclick="selectProduct(${JSON.stringify(p).replace(/"/g,'&quot;')})">Seleccionar →</button>
+        <button class="btn-save-analysis" id="save-btn-${i}" onclick="saveAnalysis(${JSON.stringify(p).replace(/"/g,'&quot;')}, ${i})">⊕ Guardar análisis</button>
         <button class="btn-detail" onclick="this.closest('.product-card').querySelector('.card-expand').classList.toggle('open');this.textContent=this.textContent.includes('Ver')?'Ocultar detalle':'Ver detalle'">Ver detalle</button>
       </div>
       <div class="card-expand">
@@ -1283,9 +1326,101 @@ function restart() {
 }
 
 // ═══════════════════════════════════════════════
+// AUTH
+// ═══════════════════════════════════════════════
+let currentUser = null;
+let authToken = null;
+
+async function initAuth() {
+  try {
+    const keys = Object.keys(localStorage).filter(k => k.includes('supabase') && k.includes('auth'));
+    for (const key of keys) {
+      try {
+        const val = JSON.parse(localStorage.getItem(key));
+        if (val?.access_token) { authToken = val.access_token; break; }
+        if (val?.session?.access_token) { authToken = val.session.access_token; break; }
+      } catch(e) {}
+    }
+    if (authToken) {
+      const resp = await fetch('/api/get-session', { headers: { 'Authorization': 'Bearer ' + authToken } });
+      const data = await resp.json();
+      if (data.user) {
+        currentUser = data.user;
+        document.getElementById('authBar').style.display = 'flex';
+        document.getElementById('authBarGuest').style.display = 'none';
+        document.getElementById('authUserName').textContent = data.user.nombre || data.user.email;
+        document.getElementById('authPlan').textContent = data.user.plan || 'free';
+        return;
+      }
+    }
+    showGuestBar();
+  } catch(e) { showGuestBar(); }
+}
+
+function showGuestBar() {
+  document.getElementById('authBar').style.display = 'none';
+  document.getElementById('authBarGuest').style.display = 'flex';
+}
+
+function handleLogout() {
+  Object.keys(localStorage).filter(k=>k.includes('supabase')).forEach(k=>localStorage.removeItem(k));
+  window.location.href = '/auth/login';
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => { t.className = 'toast ' + type; }, 3000);
+}
+
+async function saveAnalysis(p, idx) {
+  if (!currentUser || !authToken) {
+    showToast('Iniciá sesión para guardar análisis', 'info');
+    setTimeout(() => window.location.href = '/auth/login', 1500);
+    return;
+  }
+  const btn = document.getElementById('save-btn-' + idx);
+  if (!btn || btn.classList.contains('saved')) return;
+  btn.textContent = 'Guardando...';
+  try {
+    const resp = await fetch('/api/save-analysis', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+      body: JSON.stringify({
+        nombre: p.nombre, nicho: p.nicho,
+        categoria: document.getElementById('categoryInput').value,
+        canal: market, score: p.score_oportunidad,
+        segmento: p.segmento || seg,
+        precio_venta: p.precio_venta_usd || p.precio_venta_usd_equiv || '',
+        costo_estimado: p.costo_estimado_usd || '',
+        margen_estimado: p.margen_estimado || '',
+        demanda_mensual: p.demanda_mensual || '',
+        competencia: p.competencia || '',
+        fecha_clave: activeFecha ? FECHAS.find(f=>f.id===activeFecha)?.name : null,
+        data_json: p,
+      })
+    });
+    const data = await resp.json();
+    if (data.success) {
+      btn.textContent = '✓ Guardado';
+      btn.classList.add('saved');
+      showToast('✓ Análisis guardado en el Dashboard', 'success');
+    } else {
+      btn.textContent = '⊕ Guardar análisis';
+      showToast('Error: ' + data.error, 'error');
+    }
+  } catch(e) {
+    btn.textContent = '⊕ Guardar análisis';
+    showToast('Error de conexión', 'error');
+  }
+}
+
+// ═══════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════
 renderFechas();
+initAuth();
 </script>
 </body>
 </html>
