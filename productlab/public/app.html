@@ -511,22 +511,6 @@ select option{background:var(--surface);}
 <div class="panel" id="panel2">
   <div class="section-title">Paso 02 — Research de producto</div>
 
-  <!-- NICHO BANNER (precargado desde fecha) -->
-  <!-- HINT: aparece cuando no hay fecha seleccionada -->
-  <div id="segTabsHint" style="display:none;align-items:center;gap:8px;padding:10px 14px;background:var(--surface);border:1px solid rgba(0,102,255,0.2);margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);letter-spacing:0.06em">
-    <span style="font-size:14px">☝</span>
-    Hacé clic en un segmento arriba para ver sugerencias de rubros con IA
-  </div>
-
-  <div class="nicho-banner" id="nichoBanner">
-    <div class="nicho-banner-header">
-      <div class="nicho-banner-icon" id="nichoIcon"></div>
-      <div class="nicho-banner-title" id="nichoTitle"></div>
-      <div class="nicho-banner-sub" id="nichoSub"></div>
-    </div>
-    <div class="nicho-chips" id="nichoChips"></div>
-  </div>
-
   <!-- SEG TABS — compacto, solo indica el activo -->
   <div style="display:flex;gap:0;border:1px solid var(--border);background:var(--surface);overflow:hidden;margin-bottom:16px" id="segTabs">
     <button class="seg-tab active" data-seg="tendencia" onclick="setSeg('tendencia',true)" style="flex:1;padding:10px 8px;background:none;border:none;border-right:1px solid var(--border);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--muted)">
@@ -538,6 +522,21 @@ select option{background:var(--surface);}
     <button class="seg-tab" data-seg="cotidiano" onclick="setSeg('cotidiano',true)" style="flex:1;padding:10px 8px;background:none;border:none;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:6px;font-family:'Syne',sans-serif;font-size:12px;font-weight:600;color:var(--muted)">
       🔄 <span>Cotidiano</span>
     </button>
+  </div>
+
+  <!-- HINT: aparece cuando no hay fecha seleccionada -->
+  <div id="segTabsHint" style="display:none;align-items:center;gap:8px;padding:10px 14px;background:var(--surface);border:1px solid rgba(0,102,255,0.2);margin-bottom:14px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--accent2);letter-spacing:0.06em">
+    <span style="font-size:14px">☝</span>
+    Hacé clic en Tendencia, Estacional o Cotidiano para ver sugerencias de rubros con IA
+  </div>
+
+  <div class="nicho-banner" id="nichoBanner">
+    <div class="nicho-banner-header">
+      <div class="nicho-banner-icon" id="nichoIcon"></div>
+      <div class="nicho-banner-title" id="nichoTitle"></div>
+      <div class="nicho-banner-sub" id="nichoSub"></div>
+    </div>
+    <div class="nicho-chips" id="nichoChips"></div>
   </div>
 
   <div class="search-panel" id="searchPanel">
