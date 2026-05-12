@@ -1360,7 +1360,8 @@ function setPerfil(p) {
   // Hide lock message
   document.getElementById('perfilLocked').classList.remove('visible');
 }
-  seg = s;
+
+function setSeg(s, fromTab=false) {
   const cols = {tendencia:'var(--tendencia)',estacional:'var(--estacional)',cotidiano:'var(--cotidiano)'};
   document.querySelectorAll('.seg-tab').forEach(c => {
     const isSel = c.dataset.seg === s;
@@ -1446,14 +1447,15 @@ function buildPrompt(category, seg, market, mktSub, withAli, withS16, fechaHint)
 
   // Perfil constraints
   const pr = perfil ? PERFILES[perfil] : null;
-  const perfilStr = pr ? `
-PERFIL DEL INVERSOR: ${pr.label.toUpperCase()}
-- Margen neto mínimo requerido: ${pr.margenMin}%
-- Competencia máxima aceptable: ${pr.compMax}
-- Break-even objetivo: menos de ${pr.breakeven} días
-${capitalMax ? `- Capital disponible: USD ${capitalMax} (costo estimado × MOQ mínimo debe ser ≤ USD ${capitalMax})` : ''}
-${precioMin||precioMax ? `- Rango de precio de venta: ${precioMin?'USD '+precioMin:''} – ${precioMax?'USD '+precioMax:''}` : ''}
-Solo devolvé productos que cumplan estos criterios. Si un producto no cumple el margen mínimo, no lo incluyas.` : '';
+  const perfilStr = pr ? (
+    '\nPERFIL DEL INVERSOR: ' + pr.label.toUpperCase() +
+    '\n- Margen neto mínimo requerido: ' + pr.margenMin + '%' +
+    '\n- Competencia máxima aceptable: ' + pr.compMax +
+    '\n- Break-even objetivo: menos de ' + pr.breakeven + ' días' +
+    (capitalMax ? '\n- Capital disponible: USD ' + capitalMax + ' (primer lote debe ser ≤ USD ' + capitalMax + ')' : '') +
+    (precioMin||precioMax ? '\n- Rango de precio de venta: ' + (precioMin?'USD '+precioMin:'') + ' – ' + (precioMax?'USD '+precioMax:'') : '') +
+    '\nSolo devolvé productos que cumplan estos criterios.'
+  ) : '';
 
   return `Experto en e-commerce 10 años. Analizá "${category}" para ${market==='multi'?'Amazon US + MeLi AR + Shopify':market+' '+mktSub}. Segmento: ${segDefs[seg]}.${perfilStr}
 Devolvé SOLO JSON sin texto ni backticks:
