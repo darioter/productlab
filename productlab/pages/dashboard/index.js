@@ -32,6 +32,7 @@ export default function Dashboard() {
   const [publishing, setPublishing] = useState(false);
   const [publishResult, setPublishResult] = useState(null);
   const [categorySuggestions, setCategorySuggestions] = useState([]);
+  const [dolar, setDolar] = useState(null);
   const [newProduct, setNewProduct] = useState({
     nombre: '', proveedor: '', costo_real: '', costo_envio: '',
     costo_aduana: '', costo_packaging: '', unidades: '',
@@ -45,6 +46,9 @@ export default function Dashboard() {
       setUser(session.user);
       loadData(session.user.id);
     });
+    // Fetch BNA dollar rate
+    fetch('/api/dolar').then(r=>r.json()).then(d=>setDolar(d)).catch(()=>{});
+
     // Check MeLi connection from URL params
     const params = new URLSearchParams(window.location.search);
     if (params.get('meli') === 'connected') {
@@ -117,10 +121,12 @@ export default function Dashboard() {
   function openPublish(product) {
     setPublishProduct(product);
     setPublishResult(null);
+    const tcVenta = dolar?.venta || 1060;
+    const precioARS = product.precio_venta ? Math.round(product.precio_venta * tcVenta) : '';
     setPublishData({
       nombre: product.nombre,
       descripcion: `${product.nombre}. Producto nuevo en perfectas condiciones.`,
-      precio: product.precio_venta ? Math.round(product.precio_venta * 1050) : '', // USD → ARS estimado
+      precio: precioARS,
       categoria_id: '',
       categoria_nombre: '',
       stock: product.unidades || '1',
@@ -565,6 +571,12 @@ export default function Dashboard() {
                     <div className="form-field">
                       <label>Precio ARS *</label>
                       <input type="number" value={publishData.precio} onChange={e=>setPublishData({...publishData,precio:e.target.value})} required />
+                      {dolar && (
+                        <div style={{fontSize:'10px',color:'var(--muted)',fontFamily:'JetBrains Mono',marginTop:'3px'}}>
+                          TC BNA: ${dolar.venta} venta · {dolar.fuente}
+                          {publishData.precio && ` · USD equiv: $${(publishData.precio / dolar.venta).toFixed(2)}`}
+                        </div>
+                      )}
                     </div>
                     <div className="form-field">
                       <label>Stock disponible</label>
