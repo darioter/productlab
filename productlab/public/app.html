@@ -221,6 +221,21 @@ select option{background:var(--surface);}
 .btn-save-analysis{background:none;color:var(--accent2);border:1px solid rgba(0,102,255,0.35);padding:8px 14px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;cursor:pointer;transition:all 0.15s;}
 .btn-save-analysis:hover{background:rgba(0,102,255,0.08);border-color:var(--accent2);}
 .btn-save-analysis.saved{color:var(--accent);border-color:rgba(0,229,160,0.35);cursor:default;}
+/* SEARCH LINKS */
+.search-links{display:flex;gap:5px;flex-wrap:wrap;padding:0 20px 14px;}
+.search-link{font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border:1px solid var(--border);color:var(--muted);text-decoration:none;transition:all 0.15s;letter-spacing:0.06em;text-transform:uppercase;display:inline-flex;align-items:center;gap:4px;}
+.search-link:hover{color:var(--text);border-color:rgba(255,255,255,0.15);}
+.search-link.ali{color:var(--alibaba);border-color:rgba(255,106,0,0.25);}
+.search-link.ali:hover{background:rgba(255,106,0,0.08);}
+.search-link.s16{color:var(--s1688);border-color:rgba(224,32,32,0.25);}
+.search-link.s16:hover{background:rgba(224,32,32,0.08);}
+.search-link.amz{color:var(--accent);border-color:rgba(0,229,160,0.25);}
+.search-link.amz:hover{background:rgba(0,229,160,0.08);}
+.search-link.meli{color:var(--meli);border-color:rgba(255,230,0,0.25);}
+.search-link.meli:hover{background:rgba(255,230,0,0.08);}
+.search-link.gshop{color:var(--accent2);border-color:rgba(0,102,255,0.25);}
+.search-link.gshop:hover{background:rgba(0,102,255,0.08);}
+.search-links-label{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.1em;text-transform:uppercase;padding:0 20px 6px;opacity:0.6;}
 /* AUTH BAR */
 .auth-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;}
 .auth-bar-left{display:flex;align-items:center;gap:10px;}
@@ -679,7 +694,51 @@ select option{background:var(--surface);}
   </div>
   <div class="export-bar">
     <button class="btn-export" onclick="exportPlan()">⬇ Exportar plan (.txt)</button>
+    <button class="btn-cta" onclick="showConfirmDashboard()" id="btnConfirmDash" style="display:none">
+      ✅ Confirmar y agregar al Dashboard →
+    </button>
     <button class="btn-restart" onclick="restart()">↺ Nuevo análisis</button>
+  </div>
+
+  <!-- CONFIRM MODAL -->
+  <div id="confirmModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:200;display:none;align-items:center;justify-content:center;padding:20px;">
+    <div style="background:#0D1219;border:1px solid rgba(255,255,255,0.1);width:100%;max-width:500px;position:relative;">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,#00E5A0,transparent)"></div>
+      <div style="padding:20px 24px;border-bottom:1px solid rgba(255,255,255,0.07);display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:15px;font-weight:700">✅ Agregar al Dashboard</div>
+        <span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#5A7A8A;cursor:pointer;padding:4px 10px;border:1px solid rgba(255,255,255,0.07)" onclick="document.getElementById('confirmModal').style.display='none'">✕</span>
+      </div>
+      <div style="padding:20px 24px;">
+        <div id="confirmProductName" style="font-size:13px;font-weight:700;margin-bottom:16px;color:#00E5A0;"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">
+          <div>
+            <label style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#5A7A8A;display:block;margin-bottom:6px;">🛒 Comprar en</label>
+            <select id="confirmBuyChannel" style="width:100%;background:#080C10;border:1px solid rgba(255,255,255,0.07);color:#E8F0F8;font-family:'Syne',sans-serif;font-size:13px;padding:10px 12px;outline:none;appearance:none;">
+              <option value="alibaba">🔴 Alibaba</option>
+              <option value="1688">🔴 1688.com</option>
+              <option value="amazon">📦 Amazon</option>
+              <option value="meli_buy">🟡 MercadoLibre</option>
+              <option value="proveedor_local">📍 Proveedor local</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:#5A7A8A;display:block;margin-bottom:6px;">🏪 Vender en</label>
+            <select id="confirmSellChannel" style="width:100%;background:#080C10;border:1px solid rgba(255,255,255,0.07);color:#E8F0F8;font-family:'Syne',sans-serif;font-size:13px;padding:10px 12px;outline:none;appearance:none;">
+              <option value="meli">🟡 MercadoLibre</option>
+              <option value="amazon">🟢 Amazon FBA</option>
+              <option value="shopify">🟩 Shopify</option>
+              <option value="multi">🔵 Multi-canal</option>
+            </select>
+          </div>
+        </div>
+        <div id="confirmSearchLinks" style="margin-bottom:16px;"></div>
+        <div id="confirmStatus" style="font-family:'JetBrains Mono',monospace;font-size:12px;margin-bottom:12px;"></div>
+        <button onclick="confirmAddToDashboard()" style="width:100%;background:#00E5A0;color:#000;border:none;padding:12px;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;cursor:pointer;">
+          ✅ Confirmar y agregar →
+        </button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -960,7 +1019,8 @@ function buildPrompt(category, seg, market, mktSub, withAli, withS16, fechaHint)
   else if(market==='shopify') mktMetrics='"precio_venta_usd":"$XX","costo_estimado_usd":"$X–XX","margen_estimado":"XX%","aov_estimado":"$XX","canal_adquisicion":"TikTok Ads|Meta","cac_estimado":"$X–XX","competencia":"Baja|Media|Alta"';
   else mktMetrics='"costo_estimado_usd":"$X–XX","amazon":{"precio":"$XX","margen":"XX%","demanda":"X.XXX/mes","competencia":"Media"},"meli":{"precio_usd":"$XX","margen":"XX%","demanda":"XXX/mes","competencia":"Baja"},"shopify":{"precio":"$XX","margen":"XX%","canal":"TikTok|Meta"}';
   return `Experto en e-commerce 10 años. Analizá "${category}" para ${market==='multi'?'Amazon US + MeLi AR + Shopify':market+' '+mktSub}. Segmento: ${segDefs[seg]}. Devolvé SOLO JSON sin texto ni backticks:
-{"productos":[{"nombre":"Nombre MUY específico","nicho":"sub-nicho concreto","descripcion":"2 oraciones concretas de oportunidad","score_oportunidad":82,"segmento":"${seg}",${segExtra}${mktMetrics},"pros":["pro1","pro2","pro3"],"contras":["contra1","contra2"],"keywords_principales":["kw1","kw2","kw3","kw4","kw5"],"tags":["TAG1","TAG2"],"alerta":null,${aliBlock},${s16Block}}]}
+{"productos":[{"nombre":"Nombre MUY específico","nicho":"sub-nicho concreto","descripcion":"2 oraciones concretas de oportunidad","score_oportunidad":82,"segmento":"${seg}",${segExtra}${mktMetrics},"pros":["pro1","pro2","pro3"],"contras":["contra1","contra2"],"keywords_principales":["kw1","kw2","kw3","kw4","kw5"],"tags":["TAG1","TAG2"],"alerta":null,${aliBlock},${s16Block},
+"busquedas":{"alibaba_query":"exact search terms in English for Alibaba","s1688_query":"中文搜索词","amazon_buy_query":"search terms for Amazon arbitrage","amazon_sell_query":"search terms to sell on Amazon","meli_query":"términos de búsqueda en español para MeLi","google_shopping_query":"terms for Google Shopping"}}]}
 3 productos. Tags: TENDENCIA 2025-26, VIRAL TIKTOK, VENTANA CORTA, EVERGREEN, NICHO DEFENSIBLE, ALTO MARGEN, BAJA COMPETENCIA, ESCALABLE, MULTI-CANAL, GIFT-FRIENDLY, BAJO COSTO ENTRADA, SHOPIFY NATIVO, RIESGO MODERADO, SATURADO.`;
 }
 
@@ -1049,6 +1109,16 @@ function renderResults(productos, category, mktSub) {
         <button class="btn-save-analysis" id="save-btn-${i}" onclick="saveAnalysis(${JSON.stringify(p).replace(/"/g,'&quot;')}, ${i})">⊕ Guardar análisis</button>
         <button class="btn-detail" onclick="this.closest('.product-card').querySelector('.card-expand').classList.toggle('open');this.textContent=this.textContent.includes('Ver')?'Ocultar detalle':'Ver detalle'">Ver detalle</button>
       </div>
+      ${p.busquedas ? `
+      <div class="search-links-label">Buscar en:</div>
+      <div class="search-links">
+        ${p.busquedas.alibaba_query ? `<a class="search-link ali" href="https://www.alibaba.com/trade/search?SearchText=${encodeURIComponent(p.busquedas.alibaba_query)}" target="_blank">🔴 Alibaba</a>` : ''}
+        ${p.busquedas.s1688_query ? `<a class="search-link s16" href="https://s.1688.com/selloffer/offerlist.htm?keywords=${encodeURIComponent(p.busquedas.s1688_query)}" target="_blank">🔴 1688</a>` : ''}
+        ${p.busquedas.amazon_buy_query ? `<a class="search-link amz" href="https://www.amazon.com/s?k=${encodeURIComponent(p.busquedas.amazon_buy_query)}" target="_blank">📦 Amazon comprar</a>` : ''}
+        ${p.busquedas.amazon_sell_query ? `<a class="search-link amz" href="https://www.amazon.com/s?k=${encodeURIComponent(p.busquedas.amazon_sell_query)}" target="_blank">🟢 Amazon vender</a>` : ''}
+        ${p.busquedas.meli_query ? `<a class="search-link meli" href="https://listado.mercadolibre.com.ar/${encodeURIComponent(p.busquedas.meli_query)}" target="_blank">🟡 MeLi</a>` : ''}
+        ${p.busquedas.google_shopping_query ? `<a class="search-link gshop" href="https://www.google.com/search?tbm=shop&q=${encodeURIComponent(p.busquedas.google_shopping_query)}" target="_blank">🛍 G.Shopping</a>` : ''}
+      </div>` : ''}
       <div class="card-expand">
         <div class="expand-grid">
           <div class="expand-section"><h4>✓ Ventajas</h4><ul>${prosHtml}</ul></div>
@@ -1284,6 +1354,10 @@ function buildActionPlan(winner) {
         ${tlSteps.map(s=>`<div class="tl-step"><div class="tl-step-week">${s.week}</div><div class="tl-step-title">${s.title}</div><div class="tl-step-items">${s.items}</div><div class="tl-step-bar" style="--tc:${s.color}"></div></div>`).join('')}
       </div>
     </div>`;
+
+  // Show confirm button
+  const confirmBtn = document.getElementById('btnConfirmDash');
+  if(confirmBtn) confirmBtn.style.display = 'inline-flex';
 }
 
 function toggleCheck(li) {
@@ -1315,6 +1389,77 @@ function exportPlan() {
   ];
   const blob = new Blob([lines.join('\n')], {type:'text/plain'});
   const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='plan-lanzamiento.txt'; a.click();
+}
+
+function showConfirmDashboard() {
+  const p = selectedProduct||{};
+  if(!p.nombre) { showToast('Seleccioná un producto primero', 'info'); return; }
+
+  // Pre-select channels based on analysis
+  const winner = calcData.margenPct>35?'amazon':calcData.margenPct>20?'meli':'shopify';
+  document.getElementById('confirmSellChannel').value = winner;
+  document.getElementById('confirmProductName').textContent = p.nombre;
+
+  // Show search links in modal
+  const b = p.busquedas||{};
+  let links = '';
+  if(b.alibaba_query) links += `<a href="https://www.alibaba.com/trade/search?SearchText=${encodeURIComponent(b.alibaba_query)}" target="_blank" style="display:inline-block;margin:3px;font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border:1px solid rgba(255,106,0,0.3);color:#FF6A00;text-decoration:none">🔴 Ver en Alibaba →</a>`;
+  if(b.s1688_query) links += `<a href="https://s.1688.com/selloffer/offerlist.htm?keywords=${encodeURIComponent(b.s1688_query)}" target="_blank" style="display:inline-block;margin:3px;font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border:1px solid rgba(224,32,32,0.3);color:#E02020;text-decoration:none">🔴 Ver en 1688 →</a>`;
+  if(b.meli_query) links += `<a href="https://listado.mercadolibre.com.ar/${encodeURIComponent(b.meli_query)}" target="_blank" style="display:inline-block;margin:3px;font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border:1px solid rgba(255,230,0,0.3);color:#FFE600;text-decoration:none">🟡 Ver en MeLi →</a>`;
+  if(b.amazon_sell_query) links += `<a href="https://www.amazon.com/s?k=${encodeURIComponent(b.amazon_sell_query)}" target="_blank" style="display:inline-block;margin:3px;font-family:'JetBrains Mono',monospace;font-size:10px;padding:4px 10px;border:1px solid rgba(0,229,160,0.3);color:#00E5A0;text-decoration:none">🟢 Ver en Amazon →</a>`;
+  document.getElementById('confirmSearchLinks').innerHTML = links ? `<div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#5A7A8A;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px">Links directos:</div>${links}` : '';
+
+  document.getElementById('confirmStatus').textContent = '';
+  const modal = document.getElementById('confirmModal');
+  modal.style.display = 'flex';
+}
+
+async function confirmAddToDashboard() {
+  if(!currentUser || !authToken) {
+    showToast('Iniciá sesión para guardar', 'info');
+    setTimeout(()=>window.location.href='/auth/login', 1500);
+    return;
+  }
+  const p = selectedProduct||{};
+  const buyChannel = document.getElementById('confirmBuyChannel').value;
+  const sellChannel = document.getElementById('confirmSellChannel').value;
+  const status = document.getElementById('confirmStatus');
+  status.textContent = 'Guardando...';
+  status.style.color = '#5A7A8A';
+
+  try {
+    const resp = await fetch('/api/save-product', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + authToken },
+      body: JSON.stringify({
+        nombre: p.nombre,
+        canal: sellChannel,
+        canal_compra: buyChannel,
+        costo_real: calcData.costoTotal?.toFixed(2) || 0,
+        precio_venta: calcData.precio?.toFixed(2) || 0,
+        unidades: parseInt(document.getElementById('cUnidades')?.value) || 0,
+        margen_estimado: calcData.margenPct?.toFixed(1),
+        fecha_clave: activeFecha ? FECHAS.find(f=>f.id===activeFecha)?.name : null,
+        busquedas: p.busquedas || null,
+        notas: `Comprar en: ${buyChannel} | Vender en: ${sellChannel} | Margen: ${calcData.margenPct?.toFixed(1)}% | Break-even: ${calcData.breakEvenDays||'—'}d`,
+      })
+    });
+    const data = await resp.json();
+    if(data.success) {
+      status.textContent = '✅ Producto agregado al Dashboard';
+      status.style.color = '#00E5A0';
+      showToast('✅ Producto agregado al Dashboard', 'success');
+      setTimeout(()=>{
+        document.getElementById('confirmModal').style.display='none';
+      }, 1500);
+    } else {
+      status.textContent = '✗ Error: ' + data.error;
+      status.style.color = '#FF4757';
+    }
+  } catch(e) {
+    status.textContent = '✗ Error de conexión';
+    status.style.color = '#FF4757';
+  }
 }
 
 function restart() {
