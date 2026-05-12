@@ -1152,7 +1152,7 @@ async function loadNichosSeg(segKey) {
 
   const prompt = `Experto en e-commerce Argentina. Generá 10 rubros/nichos específicos de tipo: ${segDefs[segKey]}
 Devolvé SOLO JSON sin texto ni backticks: {"rubros":["rubro muy específico 1","rubro 2","rubro 3","rubro 4","rubro 5","rubro 6","rubro 7","rubro 8","rubro 9","rubro 10"]}
-No pongas rubros genéricos como "ropa" o "electrónica". Sé concreto: "Camperas impermeables trekking", "Prensa smash burger acero inox", etc.`;
+No uses rubros genéricos. Sé muy concreto y específico. Solo texto simple sin comillas dentro de los rubros.`;
 
   try {
     const resp = await fetch('/api/claude', {
@@ -1167,8 +1167,16 @@ No pongas rubros genéricos como "ropa" o "electrónica". Sé concreto: "Campera
     const data = await resp.json();
     if(data.error) throw new Error(data.error.message);
     const raw = data.content.map(b => b.text||'').join('');
-    const parsed = JSON.parse(raw.replace(/```json|```/g,'').trim());
-    const rubros = parsed.rubros || [];
+    // Limpiar el JSON más agresivamente
+    const clean = raw
+      .replace(/```json/g,'').replace(/```/g,'')
+      .replace(/[\u0000-\u001F\u007F-\u009F]/g,' ') // control chars
+      .trim();
+    // Extraer solo el objeto JSON
+    const jsonMatch = clean.match(/\{[\s\S]*\}/);
+    if(!jsonMatch) throw new Error('No se encontró JSON válido');
+    const parsed = JSON.parse(jsonMatch[0]);
+    const rubros = (parsed.rubros || []).map(r => String(r).replace(/['"]/g,'').trim()).filter(Boolean);
 
     document.getElementById('nichoTitle').textContent = `${s.icon} ${s.label} — elegí un nicho`;
     document.getElementById('nichoBanner').style.borderLeftColor = s.color;
